@@ -1,0 +1,25 @@
+# Compiled source #
+###################
+*.pyc
+*.pyd
+*.pyo
+
+
+# Logs and databases #
+######################
+*.log
+*.sql
+*.sqlite3
+*.sqbpro
+*.db
+
+# directories
+/media/*
+/staticfiles/*
+/templates/*
+/log/*
+/venv/*
+.idea/*
+*/node_modules/*
+client/node_modules/*
+

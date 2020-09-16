@@ -1,0 +1,33 @@
+
+.sffl-nav {
+    padding: 1rem;
+    background-color: #33b5e5;
+    color: white;
+    text-align: right;
+    margin-right: 2%;
+    font-size: large;
+}
+
+.sffl-content {
+    font-size: small;
+}
+
+.sffl-title {
+    width: 100%;
+    background-color: #0f6674;
+    text-align: center;
+    color: white;
+    font-size: medium;
+}
+
+.sffl-box{
+width: 80% ;
+    border-color:#005cbf;
+    border-width: 2px;
+    border-style: solid;
+}
+
+.form-group.required .control-label:after {
+  content:"*";
+  color:red;
+}

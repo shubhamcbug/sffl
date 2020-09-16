@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'client/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'client/sffl.css' %}">
+    <title>{% block title %}Single Page App{% endblock %}</title>
+</head>
+<body class="container">
+{#<div class="sffl-nav">Events Portal</div>#}
+<p></p>
+<div class="container" id="app">
+</div>
+
+</body>
+{% load static %}
+<script src="{% static "client/main.js" %}"></script>
+</html>
