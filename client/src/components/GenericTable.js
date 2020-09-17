@@ -45,6 +45,7 @@ class GenericTable extends Component {
                                 filename="registrations"
                                 fileEstension={'xlsx'}
                                 sheet="Sheet"
+                                buttonText="Download Excel"
                                 />
                         </div>
                     </div>

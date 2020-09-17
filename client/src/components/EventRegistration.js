@@ -1,9 +1,12 @@
 import React from 'react'
+import ReactDOM from 'react-dom'
 import Form from 'react-bootstrap/Form'
 import getRemoteApiData from "./Util";
 import GlobalNavigation from "./GlobalNavigation";
 import Event from "./Event";
 import Detail from "./Detail";
+import ErrorPage from "./ErrorPage";
+import axios from 'axios'
 class EventRegistration extends React.Component {
 
     constructor(props) {
@@ -22,7 +25,9 @@ class EventRegistration extends React.Component {
             arrival_time: '12:00',
             departure_date: '',
             pickup: 'No',
-            err: ''
+            err: '',
+            registered: undefined
+
         }
 
         // this.handleChange.bind(this)
@@ -46,6 +51,7 @@ class EventRegistration extends React.Component {
     postData = async  (url, formData) => {
          console.log('sending request to ',url,formData);
          return await axios.post(url, formData);
+
         // let data = null;
         // while(data === null) {
         //     console.log('waiting for promise to complete')
@@ -63,16 +69,15 @@ class EventRegistration extends React.Component {
         // return data;
     }
     handleSubmit = (event) => {
+        console.log('handle submit called  with',event.target.name,event.target.value)
         const err = this.validateForm()
         if (err.length === 0) {
-            this.setState({
-                err: ''
-            })
             let element = document.getElementById('registrationForm')
             let formData = new FormData(element)
             console.log('handleSubmit: formData is ', formData)
-            let response = this.postData('/events/create',formData)
-            if(response.status===200){
+            let response = getRemoteApiData('/events/create',formData)
+            console.log('Response =>',response)
+            if(response.update ==='success'){
                 ReactDOM.render(<Event username={this.state.name}/>,document.getElementById('app'));
             }else{
                 ReactDOM.render(<ErrorPage username={this.state.name}/>,document.getElementById('app'))
@@ -99,6 +104,7 @@ class EventRegistration extends React.Component {
         if (d1 > d2) {
             return 'Arrival Date can not be later than departure date'
         } else {
+            console.log('valid form')
             return ''
         }
 
@@ -106,22 +112,19 @@ class EventRegistration extends React.Component {
 
     render() {
         const {err} = this.state
-        let formData=new FormData();
-        formData.append('name',this.state.name);
-        formData.append('event_name',this.state.event_name);
-        console.log('render: formData is ',formData)
-        let data =  getRemoteApiData('/events/check', formData);
-        console.log('data ->', data)
-        console.log('data.user ->', data.user)
-        if(data.user !== "false"){
-            return (
-                <>
-                    <div className={'card'}>
-                        <Detail username={this.state.name} event_name={this.state.event_name} registration={data}/>
-                    </div>
-                </>
-            );
+        if(this.state.registered===undefined) {
+            const data = this.showDetailsIfRegistered();
+            if (data !== undefined && data.name === this.state.name) {
+                return (
+                    <>
+                        <div className={'card'}>
+                            <Detail username={this.state.name} event_name={this.state.event_name} registration={data}/>
+                        </div>
+                    </>
+                );
+            }
         }
+
         return (
             <>
                 <GlobalNavigation username={this.props.username}/>
@@ -281,6 +284,24 @@ class EventRegistration extends React.Component {
 
     }
 
+    showDetailsIfRegistered = () => {
+            let formData = new FormData();
+            formData.append('name', this.state.name);
+            formData.append('event_name', this.state.event_name);
+            console.log('render: formData is ', formData)
+            const data = getRemoteApiData('/events/check', formData);
+            console.log('data ->', data)
+            console.log('data.user ->', data.name)
+            if (data.name === this.state.name) {
+                console.log('user is registered for the event',this.state.event_name)
+                this.state.registered=true;
+                 return data;
+            }else{
+                this.state.registered=false
+            }
+
+        return undefined;
+    }
 }
 
 export default EventRegistration

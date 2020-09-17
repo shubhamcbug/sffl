@@ -141,6 +141,7 @@ def create(request):
         # save to database
         try:
             registration.save()
+            print('Registration successful')
             return HttpResponse('{"update":"success"}')
         except RuntimeError:
             raise EnvironmentError('Database persist failed')

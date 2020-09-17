@@ -1,13 +1,22 @@
+import React from "react";
+import GlobalNavigation from "./GlobalNavigation";
 
-
-const ErrorPage = (props) =>{
+export const ErrorPage = (props) =>{
 
     return(
 
         <>
             <div className={'card'}>
-                <span>Oops props.username! something went wrong, please try again later</span>
+                <div className="card-title">
+                    <GlobalNavigation username={props.username}/>
+                </div>
+                <div className={'card-body'}>
+                    Oops {props.username} something went wrong, please try again later
+                </div>
             </div>
-            </>
+        </>
     )
 }
+
+
+export default ErrorPage
