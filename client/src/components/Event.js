@@ -33,23 +33,23 @@ class Event extends React.Component{
          }else{
              console.log('error getting events data')
          }
-         console.log('username in componentDidMount',this.state.username)
-    }
 
+    }
 
 
     render() {
 
-          console.log('this.state.username =',this.state.username)
-          console.log('this.props.username =',this.props.username)
-           if (this.state.username === undefined && this.state.loggedOut===true){
+           console.log('this.state.username =',this.state.username)
+          //console.log('this.props.username =',this.props.username)
+          console.log('this.state.loggedOut =',this.state.loggedOut)
+
+           if (this.props.username === undefined || this.state.loggedOut===true){
                this.state.loggedOut=false
                return <Login err={'Login to view events.'}/>
            }
             return (
                 <EventTable events={this.state.events} username={this.props.username} back={()=>{
                     this.setState({
-                        username: undefined,
                         loggedOut: true
                     })
                 }} label={'Logout'}/>

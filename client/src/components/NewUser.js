@@ -20,8 +20,8 @@ class NewUser extends React.Component {
             message: ''
 
         }
-        this.handleChange.bind(this)
-        this.handleSubmit.bind(this)
+        // this.handleChange.bind(this)
+        // this.handleSubmit.bind(this)
     }
 
 
@@ -91,7 +91,7 @@ class NewUser extends React.Component {
             <>
                 <div className={'card'}>
                     <div className='card-title'>
-                        <GlobalNavigation/>
+                        <GlobalNavigation nav1={''} label1={''}/>
                     </div>
                     <div className='card-body'>
                         <div style={{
