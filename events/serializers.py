@@ -1,8 +1,10 @@
 """
 Created by Sundar on 09-09-2020.email tksrajan@gmail.com
 """
+
+
 from rest_framework import serializers
-from .models import Registration, Event
+
 
 
 class EventSerializer(serializers.Serializer):
@@ -27,3 +29,8 @@ class RegistrationSerializer(serializers.Serializer):
     departure_date = serializers.DateField(default=None)
     pickup = serializers.CharField(max_length=5)
 
+
+class LoginSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=10)
+    email = serializers.CharField(max_length=15)
+    mobile = serializers.CharField(max_length=15)

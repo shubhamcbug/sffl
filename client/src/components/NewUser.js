@@ -55,10 +55,7 @@ class NewUser extends React.Component {
         formData.append('mobile', mobile)
         const error = this.validateFormData(formData)
         console.log('error => ', error)
-        let resData;
-        if (error == null) {
-            resData = getRemoteApiData('/events/register', formData)
-        } else {
+        if (error != null) {
             console.log('form error')
             this.setState({
                 username: '',
@@ -66,22 +63,16 @@ class NewUser extends React.Component {
                 confirmPassword: '',
                 email: '',
                 mobile: '',
-                message: resData.status
-            })
+                message: error
+            });
 
-        }
-        console.log(resData)
-        if (resData.status === 'success') {
-            ReactDOM.render(<Login msg={'Login with new credentials'}/>, document.getElementById('app'));
         } else {
-            this.setState({
-                username: '',
-                password: '',
-                confirmPassword: '',
-                email: '',
-                mobile: '',
-                message: resData.status
-            })
+            const resData = getRemoteApiData('/events/register', formData)
+            console.log('response ->', resData)
+            console.log('resData.name, username ->', resData.name,username)
+            if (resData.name === username) {
+                ReactDOM.render(<Login msg={'Login with new credentials'}/>, document.getElementById('app'));
+            }
         }
     }
 

@@ -6,7 +6,7 @@ from rest_framework.renderers import JSONRenderer
 from django.db.models import Q
 
 from .models import Event, Login, Registration
-from .serializers import EventSerializer, RegistrationSerializer
+from .serializers import EventSerializer, RegistrationSerializer,LoginSerializer
 
 EXISTING = '{"status": "existing"}'
 NEW = 'NEW'
@@ -60,6 +60,7 @@ def login(request):
 def valid_registration(user, password, email, mobile):
     try:
         user = Login.objects.get(name__exact=user)
+        print('user existing %s' % user)
         return EXISTING
     except Login.DoesNotExist:
         if user and password and email and mobile:
@@ -86,8 +87,11 @@ def register(request):
             login_.mobile = mobile
             login_.temp_password = ''
             login_.save()
-            response = '{"status":"success"}'
-            return HttpResponse(response)
+            user = Login.objects.get(name__exact=user)
+            serializer = LoginSerializer(user)
+            content = JSONRenderer().render(serializer.data)
+            print('response to new user registration is %s' % content)
+            return HttpResponse(content)
         elif status == EXISTING:
             return HttpResponse(EXISTING)
         else:
