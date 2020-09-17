@@ -45,7 +45,7 @@ class Login extends React.Component {
         console.log(user, pwd)
         if (user === 'valid' && pwd === 'valid') {
             console.log('user is valid')
-            ReactDOM.render(<Event username={this.state.username} back={this.renderThis}/>,
+            ReactDOM.render(<Event username={this.state.username} />,
                 document.getElementById('app'));
         } else if (user === 'invalid') {
             console.log('user is not registered')

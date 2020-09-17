@@ -7,12 +7,6 @@ import getRemoteApiData from "./Util";
 import GenericTable from "./GenericTable";
 import GlobalNavigation from "./GlobalNavigation";
 import Event from "./Event";
-//
-// const registerForEvent= ()=>{
-// 	console.log('registerForEvents called')
-//     ReactDOM.render(<EventRegistration />,
-// 		document.getElementById('app'));
-// }
 
 const home = (props) => {
     ReactDOM.render(<Event username={props.username}/>, document.getElementById('app'));
@@ -21,10 +15,6 @@ const home = (props) => {
 const TableHeader = (props) => {
 
     return (
-        // <thead style={{
-        //     backgroundColor: "#0f6674",
-        //     color: "white"
-        // }}>
         <thead>
         <tr>
             <th>Event</th>
@@ -116,7 +106,7 @@ const EventTable = (props) => {
                     <GlobalNavigation username={props.username} nav1={props.back} label1={props.label}/>
                 </div>
                 <div className='card-body'>
-                    <Table className='table-striped table-responsive' style={{
+                    <Table className='table-responsive table-hover' style={{
                         fontSize: 'small'
                     }}>
                         <TableHeader/>

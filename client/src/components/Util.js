@@ -1,7 +1,7 @@
-import React from 'react'
+import React from 'react';
+import axios from 'axios'
 
-
-const getRemoteApiData = (url, formData) => {
+export const getRemoteApiData =  (url, formData) => {
     console.log("getting api data from with form data", url, formData)
     let httpRequest = new XMLHttpRequest();
     const method = formData === null? 'GET':'POST'
@@ -19,11 +19,11 @@ const getRemoteApiData = (url, formData) => {
     });
     httpRequest.send(formData);
     return data;
+    // const response =  await axios.post(url,formData)
+    // console.log('data received by util ',response.data)
+    // return response.data;
 
 }
-
-
-
 
 
 

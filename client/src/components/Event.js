@@ -14,8 +14,12 @@ class Event extends React.Component{
         //define an initial state
         this.state = {
             events: [],
-            loaded: false,
+            loggedOut: undefined,
+            username: this.props.username
+
         }
+
+        console.log('username in constructor',this.state.username)
 
     }
 
@@ -25,21 +29,30 @@ class Event extends React.Component{
          if(response.status === 200) {
              this.setState({
                  events: response.data,
-                 loaded: true
              })
          }else{
              console.log('error getting events data')
          }
+         console.log('username in componentDidMount',this.state.username)
     }
 
 
 
     render() {
-           if (this.props.username === undefined){
-               return <Login err={'Login first to view events.'}/>
+
+          console.log('this.state.username =',this.state.username)
+          console.log('this.props.username =',this.props.username)
+           if (this.state.username === undefined && this.state.loggedOut===true){
+               this.state.loggedOut=false
+               return <Login err={'Login to view events.'}/>
            }
             return (
-                <EventTable events={this.state.events} username={this.props.username} back={this.renderLogin} label={'Login'}/>
+                <EventTable events={this.state.events} username={this.props.username} back={()=>{
+                    this.setState({
+                        username: undefined,
+                        loggedOut: true
+                    })
+                }} label={'Logout'}/>
 
             );
         }
