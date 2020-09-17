@@ -86,12 +86,15 @@ class NewUser extends React.Component {
     }
 
     render() {
+        console.log('rendering new user')
         const err = this.state.message;
         return (
             <>
                 <div className={'card'}>
-                    <div className='card-title'>
-                        <GlobalNavigation nav1={''} label1={''}/>
+                    <div className='card-title' >
+                        <GlobalNavigation nav1={()=>{
+                          ReactDOM.render(<Login />,document.getElementById('app'))
+                        }} label1={'Login'}/>
                     </div>
                     <div className='card-body'>
                         <div style={{

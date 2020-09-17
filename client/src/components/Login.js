@@ -59,6 +59,7 @@ class Login extends React.Component {
     }
 
     register = () => {
+        console.log('calling new user')
         ReactDOM.render(<NewUser/>, document.getElementById('app'));
     }
 
