@@ -48,7 +48,7 @@ class TableBody extends React.Component {
     }
 
     showRegistrations = (e) => {
-        let event_name = document.getElementById('event_name').innerHTML
+        let event_name= e.target.innerHTML;
         console.log('event name =>', event_name)
         let formData = new FormData()
         formData.append('event_name', event_name)
@@ -71,7 +71,7 @@ class TableBody extends React.Component {
                         <td>{row.event_description}</td>
                         <td>{row.event_admin}</td>
                         <td><a href={row.event_link} target={"blank"}>Event Details</a></td>
-                        <td><a href='#' onClick={this.showRegistrations}>click to view</a></td>
+                        <td><a href='#' onClick={this.showRegistrations}>{row.event_name}</a></td>
 
                     </tr>
                 )

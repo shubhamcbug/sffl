@@ -108,7 +108,7 @@ def register(request):
 
 @csrf_exempt
 def registrations(request):
-    LOGGER.debug('received request. Method is ', request.method)
+    LOGGER.debug('received request. Method is %s' % request.method)
     if request.method == 'POST':
         event_name = request.POST['event_name']
         LOGGER.debug('event_name =', event_name)
