@@ -127,4 +127,41 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
     )
 }
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'simple': {
+            'format': '{levelname} {asctime} {module} - {message}',
+            'style': '{'
+        }
+    },
+    'handlers': {
+        'stream': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+
+        },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'formatter': 'simple',
+            'filename': '/home/ubuntu/dev/sffl/log/debug.log'
+
+        }
+    },
+    'loggers': {
+        'sffl': {
+            'handlers': ['stream', 'file'],
+            'level': 'DEBUG',
+            'propagate': True
+        },
+        'root': {
+            'handlers': ('stream', 'file'),
+            'level': 'DEBUG'}
+
+    }
+}
 print('DEBUG is ' + str(DEBUG))

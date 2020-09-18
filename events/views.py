@@ -7,11 +7,12 @@ from django.db.models import Q
 
 from .models import Event, Login, Registration
 from .serializers import EventSerializer, RegistrationSerializer,LoginSerializer
+import logging
 
 EXISTING = '{"status": "existing"}'
 NEW = 'NEW'
 INCOMPLETE = '{"status": "incomplete"}'
-
+LOGGER = logging.getLogger('sffl')
 
 class EventListView(generics.ListAPIView):
     queryset = Event.objects.all()
@@ -20,14 +21,14 @@ class EventListView(generics.ListAPIView):
 
 @csrf_exempt
 def event_data(request):
-    print(request.method)
+    LOGGER.debug(request.method)
     if request.POST:
         event_name = request.POST['event_name']
         print(event_name)
         event = Event.objects.get(event_name__exact=event_name)
         serializer = EventSerializer(event)
         content = JSONRenderer().render(serializer.data)
-        print(content)
+        LOGGER.debug('sending event detail '+content)
         return HttpResponse(content)
 
 
@@ -36,21 +37,23 @@ def user_is_valid(user, password):
         user = Login.objects.get(name__exact=user)
         valid = check_password(password, user.password)
         if valid:
+            LOGGER.debug('{"user": "valid","password":"valid"}')
             return '{"user": "valid","password":"valid"}'
         else:
+            LOGGER.debug('{"user": "valid","password":"invalid"}')
             return '{"user": "valid","password":"invalid"}'
     except Login.DoesNotExist:
-        print('user not found')
+        LOGGER.debug('user not found')
         return '{"user": "invalid"}'
 
 
 @csrf_exempt
 def login(request):
-    print('request received for login')
+    LOGGER.debug('request received for login')
     if request.POST:
         user = request.POST['username']
         password = request.POST['password']
-        print('login attempt with user %s and password %s' % (user, make_password(password)))
+        LOGGER.debug('login attempt with user %s and password %s' % (user, make_password(password)))
         response = user_is_valid(user, password)
         return HttpResponse(response)
     else:
@@ -60,7 +63,7 @@ def login(request):
 def valid_registration(user, password, email, mobile):
     try:
         user = Login.objects.get(name__exact=user)
-        print('user existing %s' % user)
+        LOGGER.debug('user existing %s' % user)
         return EXISTING
     except Login.DoesNotExist:
         if user and password and email and mobile:
@@ -76,7 +79,7 @@ def register(request):
         password = request.POST['password']
         email = request.POST['email']
         mobile = request.POST['mobile']
-        print('post values %s %s %s %s' % (user, password, email, mobile))
+        LOGGER.debug('post values %s %s %s' % (user, email, mobile))
         # save
         status = valid_registration(user, password, email, mobile)
         if status == NEW:
@@ -90,26 +93,28 @@ def register(request):
             user = Login.objects.get(name__exact=user)
             serializer = LoginSerializer(user)
             content = JSONRenderer().render(serializer.data)
-            print('response to new user registration is %s' % content)
+            LOGGER.debug('response to new user registration is %s' % content)
             return HttpResponse(content)
         elif status == EXISTING:
+            LOGGER.debug('status existing ')
             return HttpResponse(EXISTING)
         else:
+            LOGGER.debug('status incomplete')
             return HttpResponse(INCOMPLETE)
 
 
 @csrf_exempt
 def registrations(request):
-    print('received request. Method is ', request.method)
+    LOGGER.debug('received request. Method is ', request.method)
     if request.method == 'POST':
         event_name = request.POST['event_name']
-        print('event_name =', event_name)
+        LOGGER.debug('event_name =', event_name)
         event = Event.objects.get(event_name__exact=event_name)
         print(event)
         qs = Registration.objects.filter(Q(event_id=event.id), Q(is_deleted='No'))
         serializer = RegistrationSerializer(qs, many=True)
         content = JSONRenderer().render(serializer.data)
-        print('returning registrations => %s ' % content)
+        LOGGER.debug('returning registrations => %s ' % content)
         return HttpResponse(content)
 
 
@@ -145,7 +150,7 @@ def create(request):
         # save to database
         try:
             registration.save()
-            print('Registration successful')
+            LOGGER.debug('Registration successful')
             return HttpResponse('{"update":"success"}')
         except RuntimeError:
             raise EnvironmentError('Database persist failed')
@@ -158,17 +163,17 @@ def check(request):
     if request.method == 'POST':
         name = request.POST['name']
         event_name = request.POST['event_name']
-        print('received check for %s and event %s' % (name, event_name))
+        LOGGER.debug('received check for %s and event %s' % (name, event_name))
         event = Event.objects.get(event_name__exact=event_name)
         try:
             registration = Registration.objects.get(Q(event_id=event.id), Q(name__exact=name), Q(is_deleted='No'))
             serializer = RegistrationSerializer(registration)
             content = JSONRenderer().render(serializer.data)
-            print('User found. returning response %s' % content)
+            LOGGER.debug('User found. returning response %s' % content)
             return HttpResponse(content)
         except Registration.DoesNotExist:
             res = '{"user":"false"}'
-            print('user not found. Returning response %s' % res)
+            LOGGER.debug('user not found. Returning response %s' % res)
             return HttpResponse(res)
     if request.method == 'GET':
         raise Http404('invalid GET')
