@@ -66,6 +66,7 @@ def valid_registration(user, password, email, mobile):
         LOGGER.debug('user existing %s' % user)
         return EXISTING
     except Login.DoesNotExist:
+        LOGGER.debug('User does not exist. New User')
         if user and password and email and mobile:
             return NEW
         else:
@@ -82,7 +83,9 @@ def register(request):
         LOGGER.debug('post values %s %s %s' % (user, email, mobile))
         # save
         status = valid_registration(user, password, email, mobile)
+        LOGGER.debug('Status is %s' % status)
         if status == NEW:
+            LOGGER.debug('Creating new user ')
             login_ = Login()
             login_.name = user
             login_.password = make_password(password)
