@@ -17,7 +17,7 @@ class GlobalNavigation extends React.Component {
           const fn = this.props.nav1 === undefined ? this.home : this.props.nav1
           const label = this.props.label1 === undefined ? "Home" : this.props.label1
         return (
-            <div  style={{textAlign: 'right',width:'100%',backgroundColor:"lightgrey"}}> {this.props.username}
+            <div  style={{ alignSelf:"inherit", textAlign: 'right',width:'100%',backgroundColor:"lightgrey"}}> {this.props.username}
                 <ul className="nav nav-tabs card-header-tabs">
                     <li className="nav-item">
                         <a className="nav-link" href="#" onClick={fn}>{label}</a>
