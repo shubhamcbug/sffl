@@ -111,7 +111,7 @@ def registrations(request):
     LOGGER.debug('received request. Method is %s' % request.method)
     if request.method == 'POST':
         event_name = request.POST['event_name']
-        LOGGER.debug('event_name =', event_name)
+        LOGGER.debug('event_name = %s' % event_name)
         event = Event.objects.get(event_name__exact=event_name)
         print(event)
         qs = Registration.objects.filter(Q(event_id=event.id), Q(is_deleted='No'))
