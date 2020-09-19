@@ -1,8 +1,6 @@
 import React from "react";
 import Table from "react-bootstrap/Table";
-import ReactDOM from 'react-dom'
 import GlobalNavigation from "./GlobalNavigation";
-import Event from "./Event";
 
 
 const DetailTable = (props) => {
@@ -12,15 +10,16 @@ const DetailTable = (props) => {
             <div className={'card'} style={{
                 width: '100%'
             }}>
-                <div className="card-title">
-                    <GlobalNavigation username={props.registration.name} />
+                <div>
+                <GlobalNavigation username={props.username}/>
                 </div>
+                <p></p>
+
+                <span>Your registration details for {props.event_name} are given below...</span>
+
                 <div className='card-body'>
-                    <Table className={'table-striped, table-responsive'} style={{
-                        fontSize: 'small'
-                    }}>
-                        <DetailTableHeader/>
-                        <DetailTableBody registration={props.registration} event_name={props.event_name}/>
+                    <Table className='table-striped'>
+                        <DetailTableBody registration={props.registration}/>
                     </Table>
                 </div>
             </div>
@@ -29,46 +28,21 @@ const DetailTable = (props) => {
 
 }
 
-
-const DetailTableHeader = (props) => {
-    return (
-        <thead>
-        <tr>
-            <th>Event</th>
-            <th>Name</th>
-            <th>Guests</th>
-            <th>Days</th>
-            <th>Payment</th>
-            <th>payment_Ref</th>
-            <th>Arrival</th>
-            <th>Arrival Time</th>
-            <th>Departure</th>
-            <th>Pickup</th>
-        </tr>
-        </thead>
-
-    )
-}
-
 const DetailTableBody = (props) => {
-    const arr = Array(props.registration)
-    console.log("event_name : ", props.event_name)
-    const rows = arr.map((row, index) => {
-        return (
-            <tr key={index}>
-                <td>{props.event_name}</td>
-                <td>{row.name}</td>
-                <td>{row.num_guests}</td>
-                <td>{row.num_days}</td>
-                <td>{row.payment_amount}</td>
-                <td>{row.payment_ref}</td>
-                <td>{row.arrival_date}</td>
-                <td>{row.arrival_time}</td>
-                <td>{row.departure_date}</td>
-                <td>{row.pickup}</td>
-            </tr>
-        )
+    const {registration} = props
+    const keys = Object.keys(registration)
+    console.log('keys:', keys)
+    let rows = Array()
+    keys.forEach((key, index) => {
+        let row = <tr>
+            <td key={index}>{key}</td>
+            <td>{registration[key]}</td>
+        </tr>
+        console.log('name:value,row', key, registration[key], row)
+        rows.push(row)
+
     });
+    console.log(rows)
     return <tbody>{rows}</tbody>
 }
 
@@ -89,6 +63,7 @@ class Detail extends React.Component {
             <DetailTable events={this.state}
                          registration={this.state.registration}
                          event_name={this.state.event_name}
+                         username={this.props.username}
             />
         );
 

@@ -7,6 +7,7 @@ import getRemoteApiData from "./Util";
 import GenericTable from "./GenericTable";
 import GlobalNavigation from "./GlobalNavigation";
 import Event from "./Event";
+import Upload from "./Upload";
 
 const home = (props) => {
     ReactDOM.render(<Event username={props.username}/>, document.getElementById('app'));
@@ -25,6 +26,7 @@ const TableHeader = (props) => {
             <th>Admin(s)</th>
             <th>Link</th>
             <th>Registrations</th>
+            <th>Upload</th>
         </tr>
         </thead>
     )
@@ -57,6 +59,11 @@ class TableBody extends React.Component {
                                        username={this.props.username}/>, document.getElementById('app'));
     }
 
+    upload = (e)=>{
+        ReactDOM.render(<Upload username={this.props.username} event_name={e.target.innerHTML} />,
+            document.getElementById('app'))
+    }
+
     render() {
         const rows = this.props.events.map((row, index) => {
                 return (
@@ -72,6 +79,7 @@ class TableBody extends React.Component {
                         <td>{row.event_admin}</td>
                         <td><a href={row.event_link} target={"blank"}>Event Details</a></td>
                         <td><a href='#' onClick={this.showRegistrations}>{row.event_name}</a></td>
+                        <td><a href='#' onClick={this.upload}>{row.event_name}</a></td>
 
                     </tr>
                 )

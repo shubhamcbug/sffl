@@ -4,15 +4,19 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework import generics
 from rest_framework.renderers import JSONRenderer
 from django.db.models import Q
+from django.conf import settings
 
-from .models import Event, Login, Registration
-from .serializers import EventSerializer, RegistrationSerializer,LoginSerializer
+from .forms import FileUploadForm
+from .models import Event, Login, Registration, File_uploads
+from .serializers import EventSerializer, RegistrationSerializer, LoginSerializer
 import logging
+import json
 
 EXISTING = '{"status": "existing"}'
 NEW = 'NEW'
 INCOMPLETE = '{"status": "incomplete"}'
 LOGGER = logging.getLogger('sffl')
+
 
 class EventListView(generics.ListAPIView):
     queryset = Event.objects.all()
@@ -28,7 +32,7 @@ def event_data(request):
         event = Event.objects.get(event_name__exact=event_name)
         serializer = EventSerializer(event)
         content = JSONRenderer().render(serializer.data)
-        LOGGER.debug('sending event detail '+content)
+        LOGGER.debug('sending event detail ' + content)
         return HttpResponse(content)
 
 
@@ -180,3 +184,37 @@ def check(request):
             return HttpResponse(res)
     if request.method == 'GET':
         raise Http404('invalid GET')
+
+
+@csrf_exempt
+def upload_media(request):
+    if request.method == 'POST':
+        event_name = request.POST['event_name']
+        event = Event.objects.get(event_name__exact=event_name)
+        FileUploadForm(request.POST, request.FILES)
+        files = request.FILES.getlist('file_url')
+        for f in files:
+            file: File_uploads = File_uploads()
+            file.file_url = f
+            file.event = event
+            file.save()
+            LOGGER.debug('Media %s saved ' % str(file.file_url))
+        content = '{"upload: "success"}'
+        LOGGER.debug("%s" % content)
+        return HttpResponse(content)
+
+def display_media(request):
+    if request.method == 'POST':
+        event_name = request.POST['event_name']
+        event = Event.objects.get(event_name__exact=event_name)
+        media = File_uploads.objects.filter(event_id=event.id)
+        url_prefix = settings.MEDIA_URL
+        urls = []
+        for m in media:
+            urls.append(url_prefix+'/'+m)
+        print(urls)
+        content = json.dumps(urls)
+        LOGGER.debug(content)
+        return HttpResponse(content)
+
+

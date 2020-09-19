@@ -16,5 +16,7 @@ urlpatterns += [path("register", views.register, name='register'), ]
 urlpatterns += [path("registrations", views.registrations, name='registrations'), ]
 urlpatterns += [path("create", views.create, name='create'), ]
 urlpatterns += [path("check", views.check, name='check'), ]
+urlpatterns += [path("upload", views.upload_media, name='upload'), ]
+urlpatterns += [path("display", views.display_media, name='display'), ]
 
 

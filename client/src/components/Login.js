@@ -89,7 +89,7 @@ class Login extends React.Component {
                         <div
                             style={{
                                 width: "100%",
-                                backgroundColor: "#D4F8EC",
+                                backgroundColor: "lightgrey",
                                 textAlign: "center",
                                 color: "blue",
                                 ontSize: "medium"

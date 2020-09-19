@@ -48,25 +48,19 @@ class EventRegistration extends React.Component {
        return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-    postData = async  (url, formData) => {
+    postData = (url, formData) => {
          console.log('sending request to ',url,formData);
-         return await axios.post(url, formData);
-
-        // let data = null;
-        // while(data === null) {
-        //     console.log('waiting for promise to complete')
-        //     axios.post(url, formData).then((response)=>{
-        //         if(response.status===200){
-        //             data = response.data;
-        //         }
-        //     },(error)=>{
-        //         console.log('error retrieving data ',error);
-        //         data = {}
-        //     });
-        //
-        // }
-        // this.sleep(1000)
-        // return data;
+         return getRemoteApiData(url, formData)
+          // axios.post(url, formData).then(
+          //     (response) =>{
+          //         if(response.status === 200){
+          //             return response.data
+          //         }
+          //     },()=>{
+          //         let element = document.getElementById('app');
+          //         ReactDOM.render(<ErrorPage usename={this.props.username}/>,element)
+          //     }
+          // )
     }
     handleSubmit = (event) => {
         console.log('handle submit called  with',event.target.name,event.target.value)
@@ -117,9 +111,7 @@ class EventRegistration extends React.Component {
             if (data !== undefined && data.name === this.state.name) {
                 return (
                     <>
-                        <div className={'card'}>
-                            <Detail username={this.state.name} event_name={this.state.event_name} registration={data}/>
-                        </div>
+                        <Detail username={this.state.name} event_name={this.state.event_name} registration={data}/>
                     </>
                 );
             }
@@ -289,7 +281,7 @@ class EventRegistration extends React.Component {
             formData.append('name', this.state.name);
             formData.append('event_name', this.state.event_name);
             console.log('render: formData is ', formData)
-            const data = getRemoteApiData('/events/check', formData);
+            const data = this.postData('/events/check', formData);
             console.log('data ->', data)
             console.log('data.user ->', data.name)
             if (data.name === this.state.name) {

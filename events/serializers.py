@@ -34,3 +34,6 @@ class LoginSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=10)
     email = serializers.CharField(max_length=15)
     mobile = serializers.CharField(max_length=15)
+
+class MediaSerializer(serializers.Serializer):
+    file_url = serializers.FileField()

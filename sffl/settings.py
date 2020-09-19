@@ -127,7 +127,7 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
     )
 }
-USER = getpass.getuser()
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
