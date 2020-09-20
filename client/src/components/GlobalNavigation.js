@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import Event from "./Event";
-
+import MyComponent from "./ImageLoader";
 
 class GlobalNavigation extends React.Component {
     constructor(props) {
@@ -14,7 +14,7 @@ class GlobalNavigation extends React.Component {
     }
 
     showMedia = () => {
-
+       ReactDOM.render(<MyComponent/> , document.getElementById('app'))
     }
 
     render() {
@@ -38,7 +38,8 @@ class GlobalNavigation extends React.Component {
                         <a className="nav-link" href="#" style={{color: 'red'}}>{this.props.label3}</a>
                     </li>
                 </ul>
-
+              {/*  <img src='https://homepages.cae.wisc.edu/~ece533/images/sails.png' width='100' height='100'/>*/}
+              {/*<a style={{textAlign:"right"}} href={"#"} onClick={this.showMedia}>View Media</a>*/}
             </div>
         );
     }

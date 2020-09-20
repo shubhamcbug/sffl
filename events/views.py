@@ -203,6 +203,7 @@ def upload_media(request):
         LOGGER.debug("%s" % content)
         return HttpResponse(content)
 
+@csrf_exempt
 def display_media(request):
     if request.method == 'POST':
         event_name = request.POST['event_name']
@@ -211,7 +212,7 @@ def display_media(request):
         url_prefix = settings.MEDIA_URL
         urls = []
         for m in media:
-            urls.append(url_prefix+'/'+m)
+            urls.append(url_prefix+str(m.file_url))
         print(urls)
         content = json.dumps(urls)
         LOGGER.debug(content)

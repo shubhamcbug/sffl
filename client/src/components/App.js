@@ -1,5 +1,10 @@
 import React, {Component} from 'react'
 import Login from "./Login";
+import {Router, Route} from "react-router-dom";
+import {createBrowserHistory as createHistory} from 'history';
+
+
+const history = createHistory()
 
 
 class App extends Component {
@@ -7,7 +12,9 @@ class App extends Component {
 
     render() {
         return (
-            <Login/>
+            <Router history={history}>
+                <Route path="/Client" exact component={Login}/>
+            </Router>
         );
     }
 }

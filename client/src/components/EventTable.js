@@ -8,7 +8,7 @@ import GenericTable from "./GenericTable";
 import GlobalNavigation from "./GlobalNavigation";
 import Event from "./Event";
 import Upload from "./Upload";
-
+import ImageLoader from "./ImageLoader";
 const home = (props) => {
     ReactDOM.render(<Event username={props.username}/>, document.getElementById('app'));
 }
@@ -26,7 +26,8 @@ const TableHeader = (props) => {
             <th>Admin(s)</th>
             <th>Link</th>
             <th>Registrations</th>
-            <th>Upload</th>
+            <th>Upload Media</th>
+            <th>View Media</th>
         </tr>
         </thead>
     )
@@ -64,6 +65,11 @@ class TableBody extends React.Component {
             document.getElementById('app'))
     }
 
+    imageLoad = (e) => {
+          ReactDOM.render(<ImageLoader username={this.props.username} event_name={e.target.innerHTML} />,
+            document.getElementById('app'))
+    }
+
     render() {
         const rows = this.props.events.map((row, index) => {
                 return (
@@ -80,6 +86,7 @@ class TableBody extends React.Component {
                         <td><a href={row.event_link} target={"blank"}>Event Details</a></td>
                         <td><a href='#' onClick={this.showRegistrations}>{row.event_name}</a></td>
                         <td><a href='#' onClick={this.upload}>{row.event_name}</a></td>
+                        <td><a href='#' onClick={this.imageLoad}>{row.event_name}</a></td>
 
                     </tr>
                 )
