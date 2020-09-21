@@ -25,7 +25,6 @@ class Upload extends React.Component {
     }
 
     onSubmit = (e) => {
- ReactDOM.render(<UploadSpinner />,document.getElementById('spinner'))
         let formData = new FormData();
         console.log('media=', this.state.media)
         for (const key of Object.keys(this.state.media)) {
@@ -67,7 +66,7 @@ class Upload extends React.Component {
         return (
             <>
 
-                <div className={'card'}>
+                <div>
                     <GlobalNavigation username={this.props.username}/>
                  <p></p>
                    <div className='card-title'>{this.state.uploadMessage}</div>

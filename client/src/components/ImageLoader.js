@@ -3,6 +3,7 @@ import axios from 'axios'
 import ReactDOM from 'react-dom'
 import Image from "react-bootstrap/cjs/Image";
 import ShowImage from "./ShowImage";
+import GlobalNavigation from "./GlobalNavigation";
 class ImageLoader extends Component{
 
     constructor(props) {
@@ -48,11 +49,16 @@ class ImageLoader extends Component{
             )
         })
         return (
-            <div className={'container'} style={{textAlign:'center'}}>
-                <div className={'card'}>
+            // <div style={{textAlign:'center'}}>
+            <>
+                <div>
+                <GlobalNavigation username={this.props.username}/>
+                </div>
+                <div className={'card'} style={{borderStyle:"inset",textAlign: 'center'}}>
                     {rows}
                 </div>
-            </div>
+            {/*// </div>*/}
+            </>
         )
 
 

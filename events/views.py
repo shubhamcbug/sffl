@@ -189,7 +189,9 @@ def check(request):
 @csrf_exempt
 def upload_media(request):
     if request.method == 'POST':
+        LOGGER.debug("upload media request received")
         event_name = request.POST['event_name']
+        LOGGER.debug("upload media request received for event %s" % event_name)
         event = Event.objects.get(event_name__exact=event_name)
         FileUploadForm(request.POST, request.FILES)
         files = request.FILES.getlist('file_url')

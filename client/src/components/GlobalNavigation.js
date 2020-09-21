@@ -28,7 +28,7 @@ class GlobalNavigation extends React.Component {
                 backgroundColor: "lightgrey"
             }}> {this.props.username}
                 <ul className="nav nav-tabs card-header-tabs">
-                    <li className="nav-item">
+                    <li className="nav-item" style={{margin:"5 px"}}>
                         <a className="nav-link" href="#" onClick={fn}>{label}</a>
                     </li>
                     <li className="nav-item">

@@ -19,8 +19,9 @@ class ShowImage extends Component{
             <div className={'card'} style={{
                 textAlign: 'center'
             }}>
-
+                  <div>
                     <GlobalNavigation username={this.props.username}/>
+                    </div>
 
                 <div className={'card-img' }>
                     <Image className="img-responsive"
