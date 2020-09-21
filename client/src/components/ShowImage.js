@@ -30,6 +30,7 @@ class ShowImage extends Component{
                            src={this.props.url}
                            width={'300'}
                            height={'300'}
+                           borderStyle: "double"
                            />
                 </div>
 
