@@ -26,11 +26,12 @@ class ShowImage extends Component{
                 <div  style={{
                     height: '60%' ,width: '60%',margin: 'auto', display:'block'
                 }}>
-                    <Image className="img-responsive"
-                           src={this.props.url}
-                           width={'300'}
-                           height={'300'}
-                           borderStyle: "double"
+                    <img className="img-responsive"
+                           src={this.props.url} style={{
+                               width: '300',
+                        height:'300',
+                        borderStyle: 'solid'
+                    }}
                            />
                 </div>
 
