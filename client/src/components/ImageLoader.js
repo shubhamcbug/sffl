@@ -31,19 +31,19 @@ class ImageLoader extends Component{
 
     }
 
-    showBigPicture = (url) =>{
+    showBigPicture = (e) =>{
+        let imageName = e.target.innerHTML
+        let url = "/media/media/"+imageName
+        console.log(url)
         ReactDOM.render(<ShowImage url={url}/>,document.getElementById('app'));
     }
 
     render() {
-        // do {
-        //     this.sleep(1000)
-        // } while (this.state.imageUrls.length === 0)
-
         const rows = this.state.imageUrls.map((url, index) => {
             return (
-                <div className={'card-body'}>
-                        <Image src={url} width={'250'} height={'250'}/>
+                <div key={index} className={'card-body'}>
+                        <Image src={url} width={'250'} height={'250'} /><br/>
+                        <span><a href={"#"} onClick={this.showBigPicture}>{url.substring(13,url.length)}</a></span>
                 </div>
             )
         })

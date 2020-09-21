@@ -4,8 +4,6 @@
  */
 
 import React, {Component} from "react";
-import ReactDOM from 'react-dom';
-import axios from 'axios';
 import Image from "react-bootstrap/Image";
 
 class ShowImage extends Component{
@@ -17,7 +15,7 @@ class ShowImage extends Component{
     render() {
 
         return(
-            <div className={'card'}>
+            <div className={' container card'}>
 
                 <Image src={this.props.url} />
 
