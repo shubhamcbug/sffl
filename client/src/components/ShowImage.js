@@ -17,7 +17,7 @@ class ShowImage extends Component{
         return(
             <div className={' container card'}>
 
-                <Image src={this.props.url} />
+                <Image className="img-responsive"   src={this.props.url}  />
 
             </div>
         )
