@@ -35,7 +35,7 @@ class ImageLoader extends Component{
         let imageName = e.target.innerHTML
         let url = "/media/media/"+imageName
         console.log(url)
-        ReactDOM.render(<ShowImage url={url}/>,document.getElementById('app'));
+        ReactDOM.render(<ShowImage url={url} username={this.props.username }/>,document.getElementById('app'));
     }
 
     render() {

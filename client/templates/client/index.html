@@ -9,10 +9,11 @@
     <title>{% block title %}Single Page App{% endblock %}</title>
 </head>
 <body class='container'>
-<div class="container sffl-nav">Events Portal</div>
+<div class="container sffl-nav">
+ <span id="spinner"></span><span>Events Portal</span>
+</div>
 <div id="app">
 </div>
-
 </body>
 {% load static %}
 <script src="{% static "client/main.js" %}"></script>

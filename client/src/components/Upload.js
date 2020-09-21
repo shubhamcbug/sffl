@@ -11,6 +11,7 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import axios from 'axios'
 import ErrorPage from "./ErrorPage";
+import UploadSpinner from "./Spinner";
 
 class Upload extends React.Component {
 
@@ -24,17 +25,18 @@ class Upload extends React.Component {
     }
 
     onSubmit = (e) => {
-
+ ReactDOM.render(<UploadSpinner />,document.getElementById('spinner'))
         let formData = new FormData();
         console.log('media=', this.state.media)
         for (const key of Object.keys(this.state.media)) {
             formData.append('file_url', this.state.media[key])
         }
         formData.append('event_name',this.props.event_name)
-
+        let status = 0
         axios.post('/events/upload', formData).then(
             (response) => {
                 if (response.status === 200) {
+                    status = 200
                     this.setState({
                         uploadMessage: 'Uploaded... Upload again?'
                     })
@@ -45,6 +47,11 @@ class Upload extends React.Component {
                     document.getElementById('app'));
             }
         )
+
+            while(status === 0) {
+                ReactDOM.render(<UploadSpinner/>, document.getElementById('spinner'))
+            }
+
 
 
     }
@@ -59,6 +66,7 @@ class Upload extends React.Component {
     render() {
         return (
             <>
+
                 <div className={'card'}>
                     <GlobalNavigation username={this.props.username}/>
                  <p></p>

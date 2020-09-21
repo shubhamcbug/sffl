@@ -5,6 +5,7 @@
 
 import React, {Component} from "react";
 import Image from "react-bootstrap/Image";
+import GlobalNavigation from "./GlobalNavigation";
 
 class ShowImage extends Component{
     constructor(props) {
@@ -15,9 +16,9 @@ class ShowImage extends Component{
     render() {
 
         return(
-            <div className={' container card'}>
-
-                <Image className="img-responsive"   src={this.props.url}  />
+            <div >
+                 <GlobalNavigation username={this.props.username}/>
+                <Image className="img-responsive"   src={this.props.url} />
 
             </div>
         )
