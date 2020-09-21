@@ -16,16 +16,14 @@ class ShowImage extends Component{
     render() {
 
         return(
-            <div className={'container card'} style={{
+            <div className={' card'} style={{
                 textAlign: 'center'
             }}>
                   <div>
                     <GlobalNavigation username={this.props.username}/>
                     </div>
                 <p/>
-                <div  style={{
-                    height: '60%' ,width: '60%',margin: 'auto', display:'block'
-                }}>
+                <div  >
                     <Image className="img-responsive"
                            src={this.props.url}
                            width={'300'}
