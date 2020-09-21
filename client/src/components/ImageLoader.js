@@ -42,7 +42,7 @@ class ImageLoader extends Component{
         const rows = this.state.imageUrls.map((url, index) => {
             return (
                 <div key={index} className={'card-body'}>
-                        <Image src={url} width={'250'} height={'250'} /><br/>
+                        <Image src={url} width={'250'} height={'250'} borderStyle={'groove'}/><br/>
                         <span><a href={"#"} onClick={this.showBigPicture}>{url.substring(13,url.length)}</a></span>
                 </div>
             )
