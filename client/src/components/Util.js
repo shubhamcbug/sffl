@@ -1,7 +1,21 @@
 import React from 'react';
 import axios from 'axios'
 
-export const getRemoteApiData =  (url, formData) => {
+export const getRemoteApiData = async (url, formData) => {
+    console.log("getting api data from with form data", url, formData)
+    const method = (formData === null||formData===undefined)? 'GET':'POST'
+    let response=null;
+    if (method === 'GET')
+        response =  await axios.get(url);
+    else
+        response = await axios.post(url, formData);
+    const data = await response.data;
+    console.log('data received by util ',data);
+    return data;
+
+}
+
+export const syncData = (url, formData)=>{
     console.log("getting api data from with form data", url, formData)
     let httpRequest = new XMLHttpRequest();
     const method = formData === null? 'GET':'POST'
@@ -19,15 +33,11 @@ export const getRemoteApiData =  (url, formData) => {
     });
     httpRequest.send(formData);
     return data;
-    // const response =  await axios.post(url,formData)
-    // console.log('data received by util ',response.data)
-    // return response.data;
-
 }
 
 
 
-export default getRemoteApiData
+
 
 
 

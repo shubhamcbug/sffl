@@ -1,5 +1,5 @@
 import React from "react";
-import getRemoteApiData from "./Util";
+import {getRemoteApiData} from "./Util";
 import GenericTable from "./GenericTable";
 import GlobalNavigation from "./GlobalNavigation";
 class Registrations extends React.Component{

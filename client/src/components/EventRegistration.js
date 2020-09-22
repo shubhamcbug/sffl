@@ -1,12 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import Form from 'react-bootstrap/Form'
-import getRemoteApiData from "./Util";
+import {getRemoteApiData,syncData} from "./Util";
 import GlobalNavigation from "./GlobalNavigation";
 import Event from "./Event";
 import Detail from "./Detail";
 import ErrorPage from "./ErrorPage";
-import axios from 'axios'
 class EventRegistration extends React.Component {
 
     constructor(props) {
@@ -48,28 +47,14 @@ class EventRegistration extends React.Component {
        return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-    postData = (url, formData) => {
-         console.log('sending request to ',url,formData);
-         return getRemoteApiData(url, formData)
-          // axios.post(url, formData).then(
-          //     (response) =>{
-          //         if(response.status === 200){
-          //             return response.data
-          //         }
-          //     },()=>{
-          //         let element = document.getElementById('app');
-          //         ReactDOM.render(<ErrorPage usename={this.props.username}/>,element)
-          //     }
-          // )
-    }
-    handleSubmit = (event) => {
+    handleSubmit = async (event) => {
         console.log('handle submit called  with',event.target.name,event.target.value)
         const err = this.validateForm()
         if (err.length === 0) {
             let element = document.getElementById('registrationForm')
             let formData = new FormData(element)
             console.log('handleSubmit: formData is ', formData)
-            let response = getRemoteApiData('/events/create',formData)
+            let response = await getRemoteApiData('/events/create',formData)
             console.log('Response =>',response)
             if(response.update ==='success'){
                 ReactDOM.render(<Event username={this.state.name}/>,document.getElementById('app'));
@@ -104,19 +89,19 @@ class EventRegistration extends React.Component {
 
     }
 
-    render() {
-        const {err} = this.state
-        if(this.state.registered===undefined) {
-            const data = this.showDetailsIfRegistered();
-            if (data !== undefined && data.name === this.state.name) {
-                return (
-                    <>
-                        <Detail username={this.state.name} event_name={this.state.event_name} registration={data}/>
-                    </>
-                );
-            }
+    render(){
+        let someObj =  this.showDetailsIfRegistered();
+        console.log('someObj ->',someObj)
+        if(someObj.registered){
+            return (<Detail username={this.state.name} event_name={this.state.event_name}
+                                registration={someObj.registration}/>)
+        }else{
+            return this.getForm()
         }
+    }
 
+    getForm = () => {
+        const {err} = this.state
         return (
             <>
                 <GlobalNavigation username={this.props.username}/>
@@ -276,23 +261,26 @@ class EventRegistration extends React.Component {
 
     }
 
-    showDetailsIfRegistered = () => {
+    showDetailsIfRegistered () {
+        if (this.state.registered===undefined){
             let formData = new FormData();
             formData.append('name', this.state.name);
             formData.append('event_name', this.state.event_name);
             console.log('render: formData is ', formData)
-            const data = this.postData('/events/check', formData);
+            const data = syncData('/events/check', formData);
             console.log('data ->', data)
             console.log('data.user ->', data.name)
-            if (data.name === this.state.name) {
-                console.log('user is registered for the event',this.state.event_name)
-                this.state.registered=true;
-                 return data;
-            }else{
-                this.state.registered=false
+            if (this.state.name === data.name) {
+                console.log('registered')
+                this.state.registered = true
+                return {registered: true,registration:data}
+            } else {
+                console.log('Not Registered')
+                this.state.registered = false
+                return {registered: false,registration:null}
             }
+        }
 
-        return undefined;
     }
 }
 

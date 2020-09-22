@@ -1,10 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import Event from "./Event";
-import getRemoteApiData from "./Util";
+import {getRemoteApiData} from "./Util";
 import NewUser from "./NewUser";
 import Form from 'react-bootstrap/Form'
-import Button from 'react-bootstrap/Button'
 import GlobalNavigation from "./GlobalNavigation";
 
 
@@ -30,14 +29,14 @@ class Login extends React.Component {
     }
 
 
-    handleSubmit = (event) => {
+    handleSubmit = async (event) => {
         console.log('handle submit called...', event.target)
         let {username, password} = this.state
         console.log('current state', username, password)
         let formData = new FormData()
         formData.append('username', username)
         formData.append('password', password)
-        const loginData = getRemoteApiData('/events/login', formData)
+        const loginData = await getRemoteApiData('/events/login', formData)
         console.log('data received by login ', loginData)
         // validate data
         let user = loginData.user;

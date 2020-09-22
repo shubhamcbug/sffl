@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import Table from 'react-bootstrap/Table'
 import EventRegistration from "./EventRegistration";
 import Registrations from "./Registrations";
-import getRemoteApiData from "./Util";
+import {getRemoteApiData} from "./Util";
 import GenericTable from "./GenericTable";
 import GlobalNavigation from "./GlobalNavigation";
 import Event from "./Event";
@@ -50,12 +50,12 @@ class TableBody extends React.Component {
             document.getElementById('app'));
     }
 
-    showRegistrations = (e) => {
+    showRegistrations = async (e) => {
         let event_name= e.target.innerHTML;
         console.log('event name =>', event_name)
         let formData = new FormData()
         formData.append('event_name', event_name)
-        let regs = getRemoteApiData('/events/registrations', formData)
+        let regs = await getRemoteApiData('/events/registrations', formData)
         ReactDOM.render(<Registrations registrations={regs}
                                        username={this.props.username}/>, document.getElementById('app'));
     }

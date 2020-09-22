@@ -1,11 +1,7 @@
 import React from 'react'
 import EventTable from "./EventTable";
-import axios from 'axios'
+import {getRemoteApiData} from "./Util";
 import Login from "./Login";
-import GlobalNavigation from "./GlobalNavigation";
-import GenericTable from "./GenericTable";
-import ReactDOM from "react-dom";
-
 
 class Event extends React.Component{
 
@@ -24,17 +20,11 @@ class Event extends React.Component{
     }
 
     componentDidMount = async () => {
-
-         const response= await axios.get('/events');
-         if(response.status === 200) {
+         const data= await getRemoteApiData('/events',null);
              this.setState({
-                 events: response.data,
+                 events: data,
              })
-         }else{
-             console.log('error getting events data')
          }
-
-    }
 
 
     render() {

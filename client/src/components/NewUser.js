@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import getRemoteApiData from "./Util";
+import {getRemoteApiData} from "./Util";
 import Login from "./Login";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -44,7 +44,7 @@ class NewUser extends React.Component {
     //     return true;
     // }
 
-    handleSubmit = (event) => {
+    handleSubmit = async (event) => {
         console.log('handle submit called...')
         console.log(this)
         const {username, password, email, mobile} = this.state
@@ -67,7 +67,7 @@ class NewUser extends React.Component {
             });
 
         } else {
-            const resData = getRemoteApiData('/events/register', formData)
+            const resData = await getRemoteApiData('/events/register', formData)
             console.log('response ->', resData)
             console.log('resData.name, username ->', resData.name,username)
             if (resData.name === username) {
