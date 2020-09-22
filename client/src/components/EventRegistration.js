@@ -1,11 +1,12 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import Form from 'react-bootstrap/Form'
-import {getRemoteApiData,syncData} from "./Util";
+import {getRemoteApiData} from "./Util";
 import GlobalNavigation from "./GlobalNavigation";
 import Event from "./Event";
 import Detail from "./Detail";
 import ErrorPage from "./ErrorPage";
+
 class EventRegistration extends React.Component {
 
     constructor(props) {
@@ -25,7 +26,8 @@ class EventRegistration extends React.Component {
             departure_date: '',
             pickup: 'No',
             err: '',
-            registered: undefined
+            registered: undefined,
+            registration: undefined
 
         }
 
@@ -33,6 +35,19 @@ class EventRegistration extends React.Component {
         // this.handleSubmit.bind(this)
         this.state = this.initialState
         console.log('state=', this.state)
+    }
+
+    componentDidMount = async () => {
+        let formData = new FormData()
+        formData.append('name', this.state.name);
+        formData.append('event_name', this.state.event_name);
+        const data = await  getRemoteApiData('/events/check',formData)
+        if (this.state.name === data.name) {
+            this.setState({
+                registered: true,
+                registration: data
+            })
+        }
     }
 
 
@@ -90,11 +105,9 @@ class EventRegistration extends React.Component {
     }
 
     render(){
-        let someObj =  this.showDetailsIfRegistered();
-        console.log('someObj ->',someObj)
-        if(someObj.registered){
+        if(this.state.registered){
             return (<Detail username={this.state.name} event_name={this.state.event_name}
-                                registration={someObj.registration}/>)
+                                registration={this.state.registration}/>)
         }else{
             return this.getForm()
         }
@@ -258,28 +271,6 @@ class EventRegistration extends React.Component {
             </>
 
         )
-
-    }
-
-    showDetailsIfRegistered () {
-        if (this.state.registered===undefined){
-            let formData = new FormData();
-            formData.append('name', this.state.name);
-            formData.append('event_name', this.state.event_name);
-            console.log('render: formData is ', formData)
-            const data = syncData('/events/check', formData);
-            console.log('data ->', data)
-            console.log('data.user ->', data.name)
-            if (this.state.name === data.name) {
-                console.log('registered')
-                this.state.registered = true
-                return {registered: true,registration:data}
-            } else {
-                console.log('Not Registered')
-                this.state.registered = false
-                return {registered: false,registration:null}
-            }
-        }
 
     }
 }

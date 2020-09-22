@@ -34,8 +34,8 @@ const DetailTableBody = (props) => {
     console.log('keys:', keys)
     let rows = Array()
     keys.forEach((key, index) => {
-        let row = <tr>
-            <td key={index}>{key}</td>
+        let row = <tr key={index}>
+            <td>{key}</td>
             <td>{registration[key]}</td>
         </tr>
         console.log('name:value,row', key, registration[key], row)

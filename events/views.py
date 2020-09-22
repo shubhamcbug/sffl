@@ -1,16 +1,17 @@
+import json
+import logging
+
+from django.conf import settings
 from django.contrib.auth.hashers import make_password, check_password
+from django.db.models import Q
 from django.http import HttpResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import generics
 from rest_framework.renderers import JSONRenderer
-from django.db.models import Q
-from django.conf import settings
 
 from .forms import FileUploadForm
 from .models import Event, Login, Registration, File_uploads
 from .serializers import EventSerializer, RegistrationSerializer, LoginSerializer
-import logging
-import json
 
 EXISTING = '{"status": "existing"}'
 NEW = 'NEW'

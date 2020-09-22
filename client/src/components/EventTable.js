@@ -4,11 +4,11 @@ import Table from 'react-bootstrap/Table'
 import EventRegistration from "./EventRegistration";
 import Registrations from "./Registrations";
 import {getRemoteApiData} from "./Util";
-import GenericTable from "./GenericTable";
 import GlobalNavigation from "./GlobalNavigation";
 import Event from "./Event";
 import Upload from "./Upload";
 import ImageLoader from "./ImageLoader";
+
 const home = (props) => {
     ReactDOM.render(<Event username={props.username}/>, document.getElementById('app'));
 }
@@ -74,7 +74,7 @@ class TableBody extends React.Component {
         const rows = this.props.events.map((row, index) => {
                 return (
                     <tr key={index}>
-                        <td><a href="#" id={'event_name'}
+                        <td><a href="#"
                                onClick={this.registerForEvent}
                                data-toggle="tooltip"
                                title="click to register">{row.event_name}</a></td>

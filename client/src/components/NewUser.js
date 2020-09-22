@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom'
 import {getRemoteApiData} from "./Util";
 import Login from "./Login";
 import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
 import GlobalNavigation from "./GlobalNavigation";
 
 

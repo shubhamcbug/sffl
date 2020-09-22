@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import Login from "./Login";
-import {Router, Route} from "react-router-dom";
+import {Route, Router} from "react-router-dom";
 import {createBrowserHistory as createHistory} from 'history';
 
 
