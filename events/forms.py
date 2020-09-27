@@ -19,6 +19,7 @@ class NewUserForm(forms.Form):
     email = forms.CharField(max_length=20)
     mobile = forms.CharField(max_length=15)
 
+
 class EventRegistrationForm(forms.Form):
     event_name = forms.CharField(max_length=50)
     name = forms.CharField(max_length=40)
@@ -32,3 +33,7 @@ class EventRegistrationForm(forms.Form):
     departure_date = forms.DateField()
     pickup = forms.CharField(max_length=5)
 
+
+class CheckRegForm(forms.Form):
+    name = forms.CharField(max_length=20)
+    event_name = forms.CharField(max_length=50)

@@ -9,7 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework import generics
 from rest_framework.renderers import JSONRenderer
 
-from .forms import FileUploadForm, LoginForm, NewUserForm, EventRegistrationForm
+from .forms import FileUploadForm, LoginForm, NewUserForm, EventRegistrationForm,CheckRegForm
 from .models import Event, Login, Registration, File_uploads
 from .serializers import EventSerializer, RegistrationSerializer, LoginSerializer
 
@@ -171,7 +171,7 @@ def create(request):
                 LOGGER.debug('Registration successful')
                 return HttpResponse('{"update":"success"}')
             except RuntimeError:
-                raise EnvironmentError('Database persist failed')
+                return HttpResponse('{"update":"Registration failed. Contact Administrator"}')
     else:
         raise Http404('Invalid method GET')
 
@@ -179,20 +179,22 @@ def create(request):
 @csrf_exempt
 def check(request):
     if request.method == 'POST':
-        name = request.POST['name']
-        event_name = request.POST['event_name']
-        LOGGER.debug('received check for %s and event %s' % (name, event_name))
-        event = Event.objects.get(event_name__exact=event_name)
-        try:
-            registration = Registration.objects.get(Q(event_id=event.id), Q(name__exact=name), Q(is_deleted='No'))
-            serializer = RegistrationSerializer(registration)
-            content = JSONRenderer().render(serializer.data)
-            LOGGER.debug('User found. returning response %s' % content)
-            return HttpResponse(content)
-        except Registration.DoesNotExist:
-            res = '{"user":"false"}'
-            LOGGER.debug('user not found. Returning response %s' % res)
-            return HttpResponse(res)
+        form = CheckRegForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data['name']
+            event_name = form.cleaned_data['event_name']
+            LOGGER.debug('received check for %s and event %s' % (name, event_name))
+            event = Event.objects.get(event_name__exact=event_name)
+            try:
+                registration = Registration.objects.get(Q(event_id=event.id), Q(name__exact=name), Q(is_deleted='No'))
+                serializer = RegistrationSerializer(registration)
+                content = JSONRenderer().render(serializer.data)
+                LOGGER.debug('User found. returning response %s' % content)
+                return HttpResponse(content)
+            except Registration.DoesNotExist:
+                res = '{"user":"false"}'
+                LOGGER.debug('user not found. Returning response %s' % res)
+                return HttpResponse(res)
     if request.method == 'GET':
         raise Http404('invalid GET')
 

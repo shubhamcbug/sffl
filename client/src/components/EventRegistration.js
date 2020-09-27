@@ -123,7 +123,7 @@ class EventRegistration extends React.Component {
                         <div
                             style={{
                                 width: "100%",
-                                backgroundColor: "#0f6674",
+                                backgroundColor: "rgba(8,132,241,0.97)",
                                 textAlign: "center",
                                 color: "white",
                                 ontSize: "medium"
