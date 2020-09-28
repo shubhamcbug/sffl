@@ -1,5 +1,5 @@
 # sffl
-simplified ffl events project. This project has a python django back end( hosted on Apache with mod_wsgi) and a react front end. The server is api based, delivering only json content. Clients are  free to display the content using any UI tech available. This project provides a simple react web front end( not reactive native). The content can be viewed on any standard browser
+This project has a python django back end( hosted on Apache with mod_wsgi) and a react front end. The server is api based, delivering only json content. Clients are  free to display the content using any UI tech available. This project provides a simple react web front end( not reactive native . For react native, see the events project). The content can be viewed on any standard browser
 **Description**
 
 This is a react native project that interacts with a server for registering participants to various events listed.This was an excercise in learning and as such may not be useful to many. I am part of a group that organizes biennial events where all group members meet at some resort and spend  one or two days together. This effort requires registering participants, and arranging for their pick up to and from their point of entry, manging resort reservations etc. This app is used for that purpose. 
