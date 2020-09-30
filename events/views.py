@@ -8,8 +8,9 @@ from django.http import HttpResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import generics
 from rest_framework.renderers import JSONRenderer
+from timeit import default_timer as timer
 
-from .forms import FileUploadForm, LoginForm, NewUserForm, EventRegistrationForm,CheckRegForm
+from .forms import FileUploadForm, LoginForm, NewUserForm, EventRegistrationForm, CheckRegForm
 from .models import Event, Login, Registration, File_uploads
 from .serializers import EventSerializer, RegistrationSerializer, LoginSerializer
 
@@ -55,6 +56,7 @@ def user_is_valid(user, password):
 @csrf_exempt
 def login(request):
     LOGGER.debug('request received for login with method as %s' % request.method)
+    start = timer()
     if request.method == 'POST':
         loginForm = LoginForm(request.POST)
         if loginForm.is_valid():
@@ -62,6 +64,8 @@ def login(request):
             password = loginForm.cleaned_data['password']
             LOGGER.debug('login attempt with user %s and password %s' % (user, make_password(password)))
             response = user_is_valid(user, password)
+            end = timer()
+            print('elapsed time in login:', end - start)
             return HttpResponse(response)
         else:
             print(loginForm.errors)
@@ -201,22 +205,33 @@ def check(request):
 
 @csrf_exempt
 def upload_media(request):
+    global content
     if request.method == 'POST':
         LOGGER.debug("upload media request received")
-        event_name = request.POST['event_name']
-        LOGGER.debug("upload media request received for event %s" % event_name)
-        event = Event.objects.get(event_name__exact=event_name)
-        FileUploadForm(request.POST, request.FILES)
-        files = request.FILES.getlist('file_url')
-        for f in files:
-            file: File_uploads = File_uploads()
-            file.file_url = f
-            file.event = event
-            file.save()
-            LOGGER.debug('Media %s saved ' % str(file.file_url))
-        content = '{"upload: "success"}'
-        LOGGER.debug("%s" % content)
-        return HttpResponse(content)
+        form = FileUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            event_name = form.cleaned_data['event_name']
+            LOGGER.debug("upload media request received for event %s" % event_name)
+            event = Event.objects.get(event_name__exact=event_name)
+            files = request.FILES.getlist('file_url')
+            LOGGER.debug('received %s files for upload ' % len(files))
+            if len(files) == 0:
+                content = '{"upload": "No files received for upload!"}'
+                LOGGER.debug("%s" % content)
+                return HttpResponse(content)
+            for f in files:
+                file: File_uploads = File_uploads()
+                file.file_url = f
+                file.event = event
+                file.save()
+                LOGGER.debug('Media %s saved ' % str(file.file_url))
+                content = '{"upload": "success"}'
+            LOGGER.debug("%s" % content)
+            return HttpResponse(content)
+        else:
+            print(form.errors)
+    else:
+        return Http404('Invalid GET')
 
 
 @csrf_exempt
