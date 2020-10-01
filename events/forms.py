@@ -5,7 +5,8 @@ from django import forms
 
 
 class FileUploadForm(forms.Form):
-    files = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}))
+    event_name = forms.CharField(max_length=50)
+    file_url = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}))
 
 
 class LoginForm(forms.Form):

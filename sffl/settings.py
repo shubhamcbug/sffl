@@ -25,8 +25,9 @@ SECRET_KEY = 't=kyqv!et$!*72m*mdm8!ijas@mtod+2th$a2dp3a&2^y7ud-#'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG')
-ALLOWED_HOSTS = ['127.0.0.1', 'ec2-13-232-233-180.ap-south-1.compute.amazonaws.com', 'localhost', '192.168.0.103',
-                 'events.localhost.com']
+ALLOWED_HOSTS = ['127.0.0.1',
+                 'localhost', '192.168.0.100',
+                 'ec2-65-0-61-175.ap-south-1.compute.amazonaws.com']
 
 # Application definition
 
