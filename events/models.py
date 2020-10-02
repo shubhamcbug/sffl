@@ -26,7 +26,7 @@ class Event(models.Model):
     event_link = models.URLField()
 
     def __str__(self):
-        return self.event_name+" on "+str(self.event_date)
+        return self.event_name + " on " + str(self.event_date)
 
 
 class Registration(models.Model):
@@ -68,3 +68,10 @@ class File_uploads(models.Model):
 
     def __str__(self):
         return str(self.file_url)
+
+
+class Password(models.Model):
+    password = models.CharField(max_length=20)
+
+
+

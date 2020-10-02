@@ -1,5 +1,8 @@
 import json
 import logging
+import smtplib
+import string
+import random
 
 from django.conf import settings
 from django.contrib.auth.hashers import make_password, check_password
@@ -10,8 +13,8 @@ from rest_framework import generics
 from rest_framework.renderers import JSONRenderer
 from timeit import default_timer as timer
 
-from .forms import FileUploadForm, LoginForm, NewUserForm, EventRegistrationForm, CheckRegForm
-from .models import Event, Login, Registration, File_uploads
+from .forms import *
+from .models import Event, Login, Registration, File_uploads, Password
 from .serializers import EventSerializer, RegistrationSerializer, LoginSerializer
 
 EXISTING = '{"status": "existing"}'
@@ -51,6 +54,25 @@ def user_is_valid(user, password):
     except Login.DoesNotExist:
         LOGGER.debug('user not found')
         return '{"user": "invalid"}'
+
+
+@csrf_exempt
+def change_password(request):
+    if request.method == 'POST':
+        form = ChangePasswordForm()
+        if form.is_valid():
+            temp_password = form.cleaned_data['temp-password']
+            password = form.cleaned_data['password']
+            try:
+                user = Login.objects.get(temp_password__exact=temp_password)
+                user.temp_password = ''
+                user.password = make_password(password)
+                user.save(update_fields=["temp_password", "password"])
+                content = '{"status":"success"}'
+                return HttpResponse(content)
+            except Login.DoesNotExist:
+                content = '{"status":"invalid temp password"}'
+                return HttpResponse(content)
 
 
 @csrf_exempt
@@ -234,6 +256,12 @@ def upload_media(request):
         return Http404('Invalid GET')
 
 
+def create_new_password():
+    letters = string.ascii_letters
+    result_str = ''.join(random.choice(letters) for i in range(5))
+    return result_str
+
+
 @csrf_exempt
 def display_media(request):
     if request.method == 'POST':
@@ -248,3 +276,40 @@ def display_media(request):
         content = json.dumps(urls)
         LOGGER.debug(content)
         return HttpResponse(content)
+
+
+SMTP_SERVER = smtplib.SMTP("smtp.gmail.com", 587)
+SENDER = 'fflrec7680'
+
+
+def send_mail(receiver, subject, body):
+    password = Password.objects.get(pk=1)
+    SMTP_SERVER.ehlo()
+    SMTP_SERVER.starttls()
+    SMTP_SERVER.login(SENDER, password)
+    SMTP_SERVER.sendmail(SENDER, receiver, subject + ":\n" + body)
+    print('Mail sent')
+    SMTP_SERVER.close()
+
+
+@csrf_exempt
+def forgot_password(request):
+    if request.method == 'POST':
+        form = ForgotPasswordForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            try:
+                user = Login.objects.get(email__iexact=email)
+                temp_password = create_new_password()
+                subject = 'Password Reset'
+                msg = 'Your temporary password is given below. Use it to login\nYou will be asked to change your ' \
+                      'password. Please follow the instructions\n \n'
+                body = msg + temp_password
+                send_mail(email, subject, body)
+                user.temp_password = temp_password
+                user.save(update_fields=['temp_password'])
+                content = '{"status" :"Please check your email for instructions to reset your password"}'
+                return HttpResponse(content)
+            except Login.DoesNotExist:
+                content = '{"status" :"User does not exist"}'
+                return HttpResponse(content)

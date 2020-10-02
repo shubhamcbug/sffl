@@ -13,5 +13,7 @@ urlpatterns += [path("create", views.create, name='create'), ]
 urlpatterns += [path("check", views.check, name='check'), ]
 urlpatterns += [path("upload", views.upload_media, name='upload'), ]
 urlpatterns += [path("display", views.display_media, name='display'), ]
+urlpatterns += [path("forgotPwd", views.forgot_password, name='forgotPwd'), ]
+urlpatterns += [path("changePwd", views.change_password, name='changePwd'), ]
 
 
