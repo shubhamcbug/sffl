@@ -74,4 +74,13 @@ class Password(models.Model):
     password = models.CharField(max_length=20)
 
 
+class Programme(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    date = models.DateField(default=None)
+    time = models.TimeField(default=None)
+    title = models.CharField(default=None, max_length=50)
+    speaker = models.CharField(default=None, max_length=50)
+    presenter = models.CharField(default=None, max_length=50)
+
+
 

@@ -2,9 +2,7 @@
 Created by Sundar on 09-09-2020.email tksrajan@gmail.com
 """
 
-
 from rest_framework import serializers
-
 
 
 class EventSerializer(serializers.Serializer):
@@ -35,5 +33,14 @@ class LoginSerializer(serializers.Serializer):
     email = serializers.CharField(max_length=15)
     mobile = serializers.CharField(max_length=15)
 
+
 class MediaSerializer(serializers.Serializer):
     file_url = serializers.FileField()
+
+
+class ProgramSerialzer(serializers.Serializer):
+    date = serializers.DateField()
+    time = serializers.TimeField()
+    title = serializers.CharField(max_length=50)
+    speaker = serializers.CharField(max_length=50)
+    presenter = serializers.CharField(max_length=50)

@@ -14,8 +14,8 @@ from rest_framework.renderers import JSONRenderer
 from timeit import default_timer as timer
 
 from .forms import *
-from .models import Event, Login, Registration, File_uploads, Password
-from .serializers import EventSerializer, RegistrationSerializer, LoginSerializer
+from .models import *
+from .serializers import *
 
 EXISTING = '{"status": "existing"}'
 NEW = 'NEW'
@@ -59,20 +59,37 @@ def user_is_valid(user, password):
 @csrf_exempt
 def change_password(request):
     if request.method == 'POST':
-        form = ChangePasswordForm()
+        form = ChangePasswordForm(request.POST)
+        print('created form')
         if form.is_valid():
-            temp_password = form.cleaned_data['temp-password']
-            password = form.cleaned_data['password']
+            print("valid")
+            temp_password = form.cleaned_data['temp_password']
+            new_password = form.cleaned_data['password']
+            email = form.cleaned_data['email']
+            content = '{"status":"success"}'
+            print("email, temp_password,new_password %s %s %s" % (email, temp_password, new_password))
             try:
-                user = Login.objects.get(temp_password__exact=temp_password)
-                user.temp_password = ''
-                user.password = make_password(password)
-                user.save(update_fields=["temp_password", "password"])
-                content = '{"status":"success"}'
-                return HttpResponse(content)
+                if len(temp_password) == 5:
+                    user = Login.objects.get(temp_password__exact=temp_password)
+                    user.temp_password = ''
+                    user.password = make_password(new_password)
+                    user.save(update_fields=["temp_password", "password"])
+                    return HttpResponse(content)
+                else:
+                    user = Login.objects.get(email__exact=email)
+                    print("user ", str(user))
+                    if check_password(new_password, user.password):
+                        user.password = make_password(new_password)
+                        user.save(update_fields=['password'])
+                        return HttpResponse(content)
+                    else:
+                        return HttpResponse('{"status":"Invalid Password Change attempt"}')
+
             except Login.DoesNotExist:
-                content = '{"status":"invalid temp password"}'
-                return HttpResponse(content)
+                return HttpResponse('{"status":"User does not exist"}')
+        else:
+            print("errors")
+            print(form.errors)
 
 
 @csrf_exempt
@@ -97,7 +114,7 @@ def login(request):
 
 def valid_registration(user, password, email, mobile):
     try:
-        user = Login.objects.get(name__exact=user)
+        user = Login.objects.filter(Q(name__exact=user) | Q(email__exact=email))
         LOGGER.debug('user existing %s' % user)
         return EXISTING
     except Login.DoesNotExist:
@@ -178,6 +195,7 @@ def create(request):
             arrival_time = form.cleaned_data['arrival_time']
             departure_date = form.cleaned_data['departure_date']
             pickup = form.cleaned_data['pickup']
+
             # create the object
             registration = Registration()
             registration.event = event
@@ -195,6 +213,11 @@ def create(request):
             try:
                 registration.save()
                 LOGGER.debug('Registration successful')
+                # send email to admins
+                admins = event.event_admin.split(',')
+                for admin in admins:
+                    admin_user = Login.objects.get(name__exact=admin)
+                    send_mail(admin_user.email, "New Registration", name + " has registered for " + event_name)
                 return HttpResponse('{"update":"success"}')
             except RuntimeError:
                 return HttpResponse('{"update":"Registration failed. Contact Administrator"}')
@@ -278,18 +301,22 @@ def display_media(request):
         return HttpResponse(content)
 
 
-SMTP_SERVER = smtplib.SMTP("smtp.gmail.com", 587)
-SENDER = 'fflrec7680'
-
-
 def send_mail(receiver, subject, body):
-    password = Password.objects.get(pk=1)
-    SMTP_SERVER.ehlo()
-    SMTP_SERVER.starttls()
-    SMTP_SERVER.login(SENDER, password)
-    SMTP_SERVER.sendmail(SENDER, receiver, subject + ":\n" + body)
-    print('Mail sent')
-    SMTP_SERVER.close()
+    smtp_server = smtplib.SMTP("smtp.gmail.com", 587)
+    sender = 'fflrec7680'
+    try:
+        password = Password.objects.get(pk=1)
+        print('sender is %s amd  password is %s' % (sender, password.password))
+        smtp_server.ehlo()
+        smtp_server.starttls()
+        smtp_server.login(sender, password.password)
+        message = 'Subject: {}\n\n{}'.format(subject, body)
+        print(message)
+        smtp_server.sendmail(sender, receiver, message)
+        print('Mail sent')
+        smtp_server.close()
+    except RuntimeError:
+        LOGGER.warning("Email could not be sent %s" % str(RuntimeError))
 
 
 @csrf_exempt
@@ -302,14 +329,29 @@ def forgot_password(request):
                 user = Login.objects.get(email__iexact=email)
                 temp_password = create_new_password()
                 subject = 'Password Reset'
-                msg = 'Your temporary password is given below. Use it to login\nYou will be asked to change your ' \
-                      'password. Please follow the instructions\n \n'
-                body = msg + temp_password
+                msg = 'Your temporary password is given below. Use it to reset your password via Change Password screen'
+                body = msg + "\n\n" + temp_password
                 send_mail(email, subject, body)
                 user.temp_password = temp_password
                 user.save(update_fields=['temp_password'])
-                content = '{"status" :"Please check your email for instructions to reset your password"}'
+                content = '{"status" :"success","message":"Please check your email for instructions to reset your ' \
+                          'password"} '
                 return HttpResponse(content)
             except Login.DoesNotExist:
                 content = '{"status" :"User does not exist"}'
                 return HttpResponse(content)
+
+
+@csrf_exempt
+def view_programs(request):
+    if request.method == 'POST':
+        form = ProgramForm(request.POST)
+        if form.is_valid():
+            event_name = form.cleaned_data['event_name']
+            event = Event.objects.get(event_name__exact=event_name)
+            qs = Programme.objects.filter(event_id=event.id)
+            serializer = ProgramSerialzer(qs, many=True)
+            content = JSONRenderer().render(serializer.data)
+            return HttpResponse(content)
+        else:
+            print(form.errors)

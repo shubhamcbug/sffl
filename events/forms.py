@@ -45,5 +45,11 @@ class ForgotPasswordForm(forms.Form):
 
 
 class ChangePasswordForm(forms.Form):
-    temp_password = forms.CharField(max_length=5)
-    password = forms.CharField(max_length=20)
+    temp_password = forms.CharField(max_length=20, min_length=5)
+    password = forms.CharField(max_length=20, min_length=5)
+    email = forms.CharField(max_length=20, min_length=6)
+
+
+class ProgramForm(forms.Form):
+    event_name = forms.CharField(max_length=50)
+
