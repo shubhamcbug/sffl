@@ -43,7 +43,7 @@ def createCsv(objects):
     df = pd.DataFrame(dfSource)
     print(df)
     timestamp = timer()
-    filename = "registrations_"+str(timestamp)+".xlsx"
+    filename = "staticfiles/registrations_"+str(timestamp)+".xlsx"
     df.to_excel(filename)
     return xlUrl+filename
 
