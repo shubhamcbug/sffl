@@ -53,3 +53,8 @@ class ChangePasswordForm(forms.Form):
 class ProgramForm(forms.Form):
     event_name = forms.CharField(max_length=50)
 
+
+class CheckAdminForm(forms.Form):
+    username = forms.CharField(max_length=20)
+    password = forms.CharField(max_length=20)
+    event_name = forms.CharField(max_length=50)

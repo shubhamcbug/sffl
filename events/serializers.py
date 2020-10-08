@@ -44,3 +44,6 @@ class ProgramSerialzer(serializers.Serializer):
     title = serializers.CharField(max_length=50)
     speaker = serializers.CharField(max_length=50)
     presenter = serializers.CharField(max_length=50)
+
+
+

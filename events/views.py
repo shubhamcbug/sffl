@@ -1,9 +1,7 @@
 import json
-import logging
-import smtplib
+
 import string
 import random
-
 from django.conf import settings
 from django.contrib.auth.hashers import make_password, check_password
 from django.db.models import Q
@@ -16,6 +14,7 @@ from timeit import default_timer as timer
 from .forms import *
 from .models import *
 from .serializers import *
+from .Util import *
 
 EXISTING = '{"status": "existing"}'
 NEW = 'NEW'
@@ -113,11 +112,12 @@ def login(request):
 
 
 def valid_registration(user, password, email, mobile):
-    try:
-        user = Login.objects.filter(Q(name__exact=user) | Q(email__exact=email))
+    qs = Login.objects.filter(Q(name__exact=user) | Q(email__exact=email))
+    print(qs)
+    if len(qs) > 0:
         LOGGER.debug('user existing %s' % user)
         return EXISTING
-    except Login.DoesNotExist:
+    else:
         LOGGER.debug('User does not exist. New User')
         if user and password and email and mobile:
             return NEW
@@ -162,19 +162,47 @@ def register(request):
             print(form.errors)
 
 
+def getRegistrations(event_name):
+    qs = getRegObjects(event_name)
+    objects = getObjectsFromQuerySet(qs)
+    createCsv(objects)
+    serializer = RegistrationSerializer(qs, many=True)
+    content = JSONRenderer().render(serializer.data)
+    return content
+
+
 @csrf_exempt
 def registrations(request):
     LOGGER.debug('received request. Method is %s' % request.method)
     if request.method == 'POST':
         event_name = request.POST['event_name']
         LOGGER.debug('event_name = %s' % event_name)
-        event = Event.objects.get(event_name__exact=event_name)
-        print(event)
-        qs = Registration.objects.filter(Q(event_id=event.id), Q(is_deleted='No'))
-        serializer = RegistrationSerializer(qs, many=True)
-        content = JSONRenderer().render(serializer.data)
+        content = getRegistrations(event_name)
         LOGGER.debug('returning registrations => %s ' % content)
         return HttpResponse(content)
+
+
+def get_admin_email(event):
+    admins = event.event_admin.split(',')
+    emails = []
+    for admin in admins:
+        try:
+            adminUser = Login.objects.get(name__exact=admin)
+            emails.append(adminUser.email)
+        except Login.DoesNotExist:
+            LOGGER.debug('The admin user is not a registered user. Admins have to be registered')
+    return emails
+
+
+def getEmailBody(name, event_name):
+
+    newLine = "\n\n"
+    body = name + " has registered for " + event_name+newLine+"please find below all registrations so far"
+    qs = getRegObjects(event_name)
+    regs = createCsv(getObjectsFromQuerySet(qs))
+    body = body + newLine + regs
+    LOGGER.debug(body)
+    return body
 
 
 @csrf_exempt
@@ -214,10 +242,10 @@ def create(request):
                 registration.save()
                 LOGGER.debug('Registration successful')
                 # send email to admins
-                admins = event.event_admin.split(',')
-                for admin in admins:
-                    admin_user = Login.objects.get(name__exact=admin)
-                    send_mail(admin_user.email, "New Registration", name + " has registered for " + event_name)
+                admin_user_emails = get_admin_email(event)
+                for email in admin_user_emails:
+                    body = getEmailBody(name, event_name)
+                    send_mail(email, 'New Registration', body)
                 return HttpResponse('{"update":"success"}')
             except RuntimeError:
                 return HttpResponse('{"update":"Registration failed. Contact Administrator"}')
@@ -301,24 +329,6 @@ def display_media(request):
         return HttpResponse(content)
 
 
-def send_mail(receiver, subject, body):
-    smtp_server = smtplib.SMTP("smtp.gmail.com", 587)
-    sender = 'fflrec7680'
-    try:
-        password = Password.objects.get(pk=1)
-        print('sender is %s amd  password is %s' % (sender, password.password))
-        smtp_server.ehlo()
-        smtp_server.starttls()
-        smtp_server.login(sender, password.password)
-        message = 'Subject: {}\n\n{}'.format(subject, body)
-        print(message)
-        smtp_server.sendmail(sender, receiver, message)
-        print('Mail sent')
-        smtp_server.close()
-    except RuntimeError:
-        LOGGER.warning("Email could not be sent %s" % str(RuntimeError))
-
-
 @csrf_exempt
 def forgot_password(request):
     if request.method == 'POST':
@@ -353,5 +363,27 @@ def view_programs(request):
             serializer = ProgramSerialzer(qs, many=True)
             content = JSONRenderer().render(serializer.data)
             return HttpResponse(content)
+        else:
+            print(form.errors)
+
+
+@csrf_exempt
+def check_event_admin(request):
+    if request.method == 'POST':
+        form = CheckAdminForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            event_name = form.cleaned_data['event_name']
+            user = Login.objects.get(name__exact=username)
+            if check_password(password, user.password):
+                event = Event.objects.get(event_name__exact=event_name)
+                if event.event_admin.__contains__(username):
+                    content = getRegistrations(event_name)
+                    return HttpResponse(content)
+                else:
+                    return HttpResponse('{"status:"invalid"}')
+            else:
+                return HttpResponse('{"status:"invalid"}')
         else:
             print(form.errors)

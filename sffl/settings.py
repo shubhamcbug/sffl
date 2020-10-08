@@ -28,7 +28,7 @@ DEBUG = os.environ.get('DEBUG')
 ALLOWED_HOSTS = ['127.0.0.1',
                  'localhost', '192.168.0.100',
                  'ec2-65-0-61-175.ap-south-1.compute.amazonaws.com']
-
+HOST = "ec2-65-0-61-175.ap-south-1.compute.amazonaws.com"
 # Application definition
 
 INSTALLED_APPS = [
