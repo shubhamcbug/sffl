@@ -41,9 +41,9 @@ def createCsv(objects):
         dfSource.append(values)
 
     df = pd.DataFrame(dfSource)
-    print(df)
+    LOGGER.debug(df.__str__)
     timestamp = timer()
-    filename = "staticfiles/registrations_"+str(timestamp)+".xlsx"
+    filename = "registrations_"+str(timestamp)+".xlsx"
     df.to_excel(filename)
     return xlUrl+filename
 

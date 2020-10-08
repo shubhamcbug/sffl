@@ -164,8 +164,6 @@ def register(request):
 
 def getRegistrations(event_name):
     qs = getRegObjects(event_name)
-    objects = getObjectsFromQuerySet(qs)
-    createCsv(objects)
     serializer = RegistrationSerializer(qs, many=True)
     content = JSONRenderer().render(serializer.data)
     return content
