@@ -5,7 +5,10 @@ import logging
 import smtplib
 from django.conf import settings
 from timeit import default_timer as timer
-
+from oauth2client.service_account import ServiceAccountCredentials
+from pydrive.drive import GoogleDrive
+from pydrive.auth import GoogleAuth
+import os
 import pandas as pd
 from django.db.models import Q
 
@@ -13,6 +16,34 @@ from events.models import Password, Event, Registration
 
 LOGGER = logging.getLogger('sffl.util')
 xlUrl = "http://" + settings.HOST + ":8000/"
+
+
+def read_users():
+    filename = "/Users/tksra/downloads/REC_BATCH.xlsx"
+    data = pd.read_excel(filename, names=['#', 'Branch', 'Name', 'Email ID', 'WhatsApp no', 'Mobile'])
+    df = pd.DataFrame(data, columns=['Name', "Email ID"])
+    list_users = []
+    for index, row in df.iterrows():
+        email = row['Email ID']
+        if not isinstance(email, float):
+            print(row['Name'], row['Email ID'])
+            list_users.append((row['Name'], row['Email ID']))
+    return list_users
+
+
+def uploadFilesToGoogleDrive(directory):
+    authorization = GoogleAuth()
+    scope = ['https://www.googleapis.com/auth/drive']
+    authorization.credentials = ServiceAccountCredentials.from_json_keyfile_name('client_secrets_1.json', scope)
+    drive = GoogleDrive(authorization)
+    for x in os.listdir(directory):
+        LOGGER.debug("uploading file ", x)
+        f = drive.CreateFile({str(x): x})
+        f.SetContentFile(os.path.join(directory, x))
+        f.Upload()
+        LOGGER.debug("uploaded file ", x)
+        f = None
+    LOGGER.debug('Uploaded all files')
 
 
 def getRegObjects(event_name):
@@ -43,9 +74,9 @@ def createCsv(objects):
     df = pd.DataFrame(dfSource)
     LOGGER.debug(df.__str__)
     timestamp = timer()
-    filename = "registrations_"+str(timestamp)+".xlsx"
+    filename = "registrations_" + str(timestamp) + ".xlsx"
     df.to_excel(filename)
-    return xlUrl+filename
+    return xlUrl + filename
 
 
 def send_mail(receiver, subject, body):

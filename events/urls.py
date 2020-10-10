@@ -17,5 +17,6 @@ urlpatterns += [path("forgotPwd", views.forgot_password, name='forgotPwd'), ]
 urlpatterns += [path("changePwd", views.change_password, name='changePwd'), ]
 urlpatterns += [path("viewProgram", views.view_programs, name='viewProgram'), ]
 urlpatterns += [path("checkAdmin", views.check_event_admin, name='checkAdmin'), ]
+urlpatterns += [path("populate", views.populate_auth_users, name='populate'), ]
 
 

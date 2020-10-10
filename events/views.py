@@ -19,6 +19,7 @@ from .Util import *
 EXISTING = '{"status": "existing"}'
 NEW = 'NEW'
 INCOMPLETE = '{"status": "incomplete"}'
+INVALID = '{"status":"Not a member of the group. Contact Administrator"}'
 LOGGER = logging.getLogger('sffl')
 
 
@@ -112,6 +113,9 @@ def login(request):
 
 
 def valid_registration(user, password, email, mobile):
+    authorised = AuthorisedUser.objects.filter(email__exact=email)
+    if len(authorised) == 0:
+        return HttpResponse(INVALID)
     qs = Login.objects.filter(Q(name__exact=user) | Q(email__exact=email))
     print(qs)
     if len(qs) > 0:
@@ -134,6 +138,7 @@ def register(request):
             password = form.cleaned_data['password']
             email = form.cleaned_data['email']
             mobile = form.cleaned_data['mobile']
+
             LOGGER.debug('post values %s %s %s' % (user, email, mobile))
             # save
             status = valid_registration(user, password, email, mobile)
@@ -193,9 +198,8 @@ def get_admin_email(event):
 
 
 def getEmailBody(name, event_name):
-
     newLine = "\n\n"
-    body = name + " has registered for " + event_name+newLine+"please find below all registrations so far"
+    body = name + " has registered for " + event_name + newLine + "please find below all registrations so far"
     qs = getRegObjects(event_name)
     regs = createCsv(getObjectsFromQuerySet(qs))
     body = body + newLine + regs
@@ -385,3 +389,19 @@ def check_event_admin(request):
                 return HttpResponse('{"status:"invalid"}')
         else:
             print(form.errors)
+
+
+def populate_auth_users(request):
+    list_users = read_users()
+    for data in list_users:
+        auth_user = AuthorisedUser()
+        auth_user.name = data[0]
+        auth_user.email = data[1]
+        try:
+            user = AuthorisedUser.objects.get(email__iexact=auth_user.email)
+            user.delete()
+            auth_user.save()
+        except AuthorisedUser.DoesNotExist:
+            auth_user.save()
+    print('done...')
+    return HttpResponse('{"Upload": "completed"}')

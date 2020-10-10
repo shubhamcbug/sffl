@@ -83,4 +83,6 @@ class Programme(models.Model):
     presenter = models.CharField(default=None, max_length=50)
 
 
-
+class AuthorisedUser(models.Model):
+    name = models.CharField(max_length=30)
+    email = models.EmailField(max_length=30)
