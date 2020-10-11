@@ -1,21 +1,26 @@
 """
 Created by Sundar on 08-10-2020.email tksrajan@gmail.com
 """
+import datetime
 import logging
 import smtplib
 from django.conf import settings
-from timeit import default_timer as timer
+
 from oauth2client.service_account import ServiceAccountCredentials
 from pydrive.drive import GoogleDrive
 from pydrive.auth import GoogleAuth
 import os
 import pandas as pd
 from django.db.models import Q
-
 from events.models import Password, Event, Registration
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
 
 LOGGER = logging.getLogger('sffl.util')
-xlUrl = "http://" + settings.HOST + ":8000/"
+
+FROM = 'fflrec7680@gmail.com'
 
 
 def read_users():
@@ -61,7 +66,8 @@ def getObjectsFromQuerySet(qs):
     return objects
 
 
-def createCsv(objects):
+def createCsv(event_name):
+    objects = getObjectsFromQuerySet(getRegObjects(event_name))
     dfSource = []
     columns = ["name", "payment", "payment_ref", "Guests", "Days", "Arrival", "Time", "Departure", "Travel Mode",
                "Pickup"]
@@ -72,26 +78,47 @@ def createCsv(objects):
         dfSource.append(values)
 
     df = pd.DataFrame(dfSource)
-    LOGGER.debug(df.__str__)
-    timestamp = timer()
-    filename = "registrations_" + str(timestamp) + ".xlsx"
-    df.to_excel(filename)
-    return xlUrl + filename
+    print(df)
+
+    filename = "registrations.xlsx"
+    # delete the file if it exists
+    root = os.getcwd()
+    fullFile = root+"/"+filename
+    print(fullFile)
+    if os.path.exists(fullFile):
+        os.remove(fullFile)
+    df.to_excel(fullFile)
+    return root, filename
 
 
-def send_mail(receiver, subject, body):
-    LOGGER.debug('sending email to event admin %s ' % receiver)
-    smtp_server = smtplib.SMTP("smtp.gmail.com", 587)
-    sender = 'fflrec7680'
+def send_mail(to, subject, message, path, filename):
+    no_reply_disclaimer = """\n\n --------------------------------------------------------------
+    \n\nDO not respond to this email. All replies to this inbox are automatically trashed. 
+    Contact your event administrator for any queries/discrepancies"""
     try:
+        msg = MIMEMultipart()
+        msg['From'] = FROM
+        msg['To'] = to
+        msg['Subject'] = subject
+        body = message + no_reply_disclaimer
+        msg.attach(MIMEText(body, 'plain'))
+        filename = filename
+        fqfn = path + "/" + filename  # fully qualified file name
+        attachment = open(fqfn, 'rb')
+        p = MIMEBase('application', 'octet-stream')
+        p.set_payload(attachment.read())
+        encoders.encode_base64(p)
+        p.add_header('Content-Disposition', "attachment; filename= %s" % filename)
+        msg.attach(p)
+        s = smtplib.SMTP('smtp.gmail.com', 587)
+        s.starttls()
+        # Authentication
         password = Password.objects.get(pk=1)
-        print('sender is %s amd  password is %s' % (sender, password.password))
-        smtp_server.ehlo()
-        smtp_server.starttls()
-        smtp_server.login(sender, password.password)
-        msg = 'Subject: {}\n\n{}'.format(subject, body)
-        smtp_server.sendmail(sender, receiver, msg)
-        print('Mail sent')
-        smtp_server.close()
+        print(password.password)
+        s.login(FROM, password.password)
+        text = msg.as_string()
+        s.sendmail(FROM, to, text)
+        s.quit()
     except RuntimeError:
-        LOGGER.warning("Email could not be sent %s" % str(RuntimeError))
+        print('Error sending email')
+

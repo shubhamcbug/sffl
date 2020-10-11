@@ -1,20 +1,17 @@
 import json
-
-import string
 import random
-from django.conf import settings
+import string
+
 from django.contrib.auth.hashers import make_password, check_password
-from django.db.models import Q
 from django.http import HttpResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import generics
 from rest_framework.renderers import JSONRenderer
-from timeit import default_timer as timer
 
+from .Util import *
 from .forms import *
 from .models import *
 from .serializers import *
-from .Util import *
 
 EXISTING = '{"status": "existing"}'
 NEW = 'NEW'
@@ -95,16 +92,13 @@ def change_password(request):
 @csrf_exempt
 def login(request):
     LOGGER.debug('request received for login with method as %s' % request.method)
-    start = timer()
     if request.method == 'POST':
         loginForm = LoginForm(request.POST)
         if loginForm.is_valid():
             user = loginForm.cleaned_data['username']
             password = loginForm.cleaned_data['password']
-            LOGGER.debug('login attempt with user %s and password %s' % (user, make_password(password)))
+            LOGGER.debug('login attempt from user %s ' % user)
             response = user_is_valid(user, password)
-            end = timer()
-            print('elapsed time in login:', end - start)
             return HttpResponse(response)
         else:
             print(loginForm.errors)
@@ -197,12 +191,15 @@ def get_admin_email(event):
     return emails
 
 
+def get_excel(event_name):
+    qs = getRegObjects(event_name)
+    return createCsv(getObjectsFromQuerySet(qs))
+
+
 def getEmailBody(name, event_name):
     newLine = "\n\n"
-    body = name + " has registered for " + event_name + newLine + "please find below all registrations so far"
-    qs = getRegObjects(event_name)
-    regs = createCsv(getObjectsFromQuerySet(qs))
-    body = body + newLine + regs
+    body = name + " has registered for " + event_name + newLine
+    body = body + " See attachment for complete list of registrations"
     LOGGER.debug(body)
     return body
 
@@ -225,6 +222,7 @@ def create(request):
             arrival_time = form.cleaned_data['arrival_time']
             departure_date = form.cleaned_data['departure_date']
             pickup = form.cleaned_data['pickup']
+            LOGGER.debug('all data received')
 
             # create the object
             registration = Registration()
@@ -247,10 +245,13 @@ def create(request):
                 admin_user_emails = get_admin_email(event)
                 for email in admin_user_emails:
                     body = getEmailBody(name, event_name)
-                    send_mail(email, 'New Registration', body)
+                    path, filename = createCsv(event_name)
+                    send_mail(email, 'New Registration', body, path=path, filename=filename)
                 return HttpResponse('{"update":"success"}')
             except RuntimeError:
                 return HttpResponse('{"update":"Registration failed. Contact Administrator"}')
+        else:
+            print(form.errors)
     else:
         raise Http404('Invalid method GET')
 
