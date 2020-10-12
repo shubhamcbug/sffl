@@ -24,7 +24,7 @@ FROM = 'fflrec7680@gmail.com'
 
 
 def read_users():
-    filename = os.getcwd()+"/"+"REC_BATCH.xlsx"
+    filename = "/home/ubuntu/dev/sffl/REC_BATCH.xlsx"
     LOGGER.debug('Reading users from %s' % filename)
     data = pd.read_excel(filename, names=['#', 'Branch', 'Name', 'Email ID', 'WhatsApp no', 'Mobile'])
     df = pd.DataFrame(data, columns=['Name', "Email ID"])
