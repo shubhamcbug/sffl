@@ -107,9 +107,10 @@ def login(request):
 
 
 def valid_registration(user, password, email, mobile):
-    authorised = AuthorisedUser.objects.filter(email__exact=email)
-    if len(authorised) == 0:
-        return HttpResponse(INVALID)
+    if os.getenv('env') == 'PROD':
+        authorised = AuthorisedUser.objects.filter(email__exact=email)
+        if len(authorised) == 0:
+            return HttpResponse(INVALID)
     qs = Login.objects.filter(Q(name__exact=user) | Q(email__exact=email))
     print(qs)
     if len(qs) > 0:
@@ -132,6 +133,7 @@ def register(request):
             password = form.cleaned_data['password']
             email = form.cleaned_data['email']
             mobile = form.cleaned_data['mobile']
+
 
             LOGGER.debug('post values %s %s %s' % (user, email, mobile))
             # save

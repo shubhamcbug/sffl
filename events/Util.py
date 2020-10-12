@@ -24,17 +24,20 @@ FROM = 'fflrec7680@gmail.com'
 
 
 def read_users():
-    filename = "/home/ubuntu/dev/sffl/REC_BATCH.xlsx"
-    LOGGER.debug('Reading users from %s' % filename)
-    data = pd.read_excel(filename, names=['#', 'Branch', 'Name', 'Email ID', 'WhatsApp no', 'Mobile'])
-    df = pd.DataFrame(data, columns=['Name', "Email ID"])
-    list_users = []
-    for index, row in df.iterrows():
-        email = row['Email ID']
-        if not isinstance(email, float):
-            print(row['Name'], row['Email ID'])
-            list_users.append((row['Name'], row['Email ID']))
-    return list_users
+    filename = os.getenv("User_FILE_PATH")
+    if filename:
+        LOGGER.debug('Reading users from %s' % filename)
+        data = pd.read_excel(filename, names=['#', 'Branch', 'Name', 'Email ID', 'WhatsApp no', 'Mobile'])
+        df = pd.DataFrame(data, columns=['Name', "Email ID"])
+        list_users = []
+        for index, row in df.iterrows():
+            email = row['Email ID']
+            if not isinstance(email, float):
+                LOGGER.debug('%s   %s' % (row['Name'], row['Email ID']))
+                list_users.append((row['Name'], row['Email ID']))
+        return list_users
+    LOGGER.warning("User file not found")
+    return None
 
 
 def uploadFilesToGoogleDrive(directory):
