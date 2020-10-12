@@ -24,7 +24,8 @@ FROM = 'fflrec7680@gmail.com'
 
 
 def read_users():
-    filename = "/Users/tksra/downloads/REC_BATCH.xlsx"
+    filename = os.getcwd()+"/"+"REC_BATCH.xlsx"
+    LOGGER.debug('Reading users from %s' % filename)
     data = pd.read_excel(filename, names=['#', 'Branch', 'Name', 'Email ID', 'WhatsApp no', 'Mobile'])
     df = pd.DataFrame(data, columns=['Name', "Email ID"])
     list_users = []
@@ -92,9 +93,9 @@ def createCsv(event_name):
 
 
 def send_mail(to, subject, message, path, filename):
-    no_reply_disclaimer = """\n\n --------------------------------------------------------------
-    \n\nDO not respond to this email. All replies to this inbox are automatically trashed. 
-    Contact your event administrator for any queries/discrepancies"""
+    no_reply_disclaimer = """\n -------------------------------------------------------------- \n\Do not respond to 
+    this email. All replies to this inbox are automatically trashed. Contact your event administrator for any 
+    queries/discrepancies """
     try:
         msg = MIMEMultipart()
         msg['From'] = FROM
