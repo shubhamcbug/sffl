@@ -24,7 +24,7 @@ FROM = 'fflrec7680@gmail.com'
 
 
 def read_users():
-    filename = os.getenv("User_FILE_PATH")
+    filename = os.getenv("USER_FILE_PATH")
     if filename:
         LOGGER.debug('Reading users from %s' % filename)
         data = pd.read_excel(filename, names=['#', 'Branch', 'Name', 'Email ID', 'WhatsApp no', 'Mobile'])
