@@ -17,7 +17,7 @@ Server allows the following actions and responds with JSON data
 
 **API Calls**
 
-Root URL: http://ec2-13-232-233-180.ap-south-1.compute.amazonaws.com:8000/client
+Root URL: http://ec2-65-0-61-175.ap-south-1.compute.amazonaws.com:8000/client
 
 1.  New User: [Root URL]/events/register
 2.  Login   : [Root URL]/events/login
